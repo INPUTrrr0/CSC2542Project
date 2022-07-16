@@ -1,0 +1,29 @@
+"make[plank]":
+  ["do[plank]"]
+
+"make[stick]":
+  ["do[stick]"]
+
+"make[cloth]":
+  ["do[cloth]"]
+
+"make[rope]":
+  ["do[rope]"]
+
+"make[bridge]":
+  ["do[bridge]"]
+
+"make[bed]":
+  ["do[bed]"]
+
+"make[axe]":
+  ["do[axe]"]
+
+"make[shears]":
+  ["do[shears]"]
+
+"get[gold]":
+  ["do[gold]"]
+
+"get[gem]":
+  ["do[gem]"]
