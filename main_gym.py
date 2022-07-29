@@ -1,35 +1,38 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
-from misc.util import Struct
+from utils.util import Struct
 import models
 import trainers
-import worlds 
+import environment
 
 import logging
 import numpy as np
 import os
-import random
 import sys
 import traceback
 import yaml
+from stable_baselines3 import DQN
 
 def main():
     config = configure()
-    world = worlds.load(config)
-    model = models.load(config)
-    trainer = trainers.load(config)
-    trainer.train(model, world)
+    env = environment.CraftEnv(config)
+    
+    model = DQN("MlpPolicy", env, verbose=1)
+    model.learn(total_timesteps=3000000, log_interval=4)
+    # trainer = trainers.load(config)
+    # trainer.train(model, world)
 
 def configure():
     # load config
     with open("config.yaml") as config_f:
-        config = Struct(**yaml.load(config_f))
+        config = Struct(**yaml.load(config_f, Loader=yaml.SafeLoader))
 
     # set up experiment
     config.experiment_dir = os.path.join("experiments/%s" % config.name)
-    assert not os.path.exists(config.experiment_dir), \
-            "Experiment %s already exists!" % config.experiment_dir
-    os.mkdir(config.experiment_dir)
+    # assert not os.path.exists(config.experiment_dir), \
+    #         "Experiment %s already exists!" % config.experiment_dir
+    if not os.path.exists(config.experiment_dir):
+        os.mkdir(config.experiment_dir)
 
     # set up logging
     log_name = os.path.join(config.experiment_dir, "run.log")

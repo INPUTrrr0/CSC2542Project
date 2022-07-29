@@ -1,4 +1,4 @@
-from misc.util import Struct, Index
+from utils.util import Struct, Index
 
 import copy
 import numpy as np
@@ -7,8 +7,7 @@ import yaml
 class Cookbook(object):
     def __init__(self, recipes_path):
         with open(recipes_path) as recipes_f:
-            recipes = yaml.load(recipes_f)
-        #self.environment = set(recipes["environment"])
+            recipes = yaml.load(recipes_f, Loader=yaml.SafeLoader)
         self.index = Index()
         self.environment = set(self.index.index(e) for e in recipes["environment"])
         self.primitives = set(self.index.index(p) for p in recipes["primitives"])

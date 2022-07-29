@@ -1,4 +1,5 @@
-from craft import CraftWorld
+from environment.craft import CraftWorld
+from environment.env_wrapper import CraftEnv
 
 def load(config):
     cls_name = config.world.name

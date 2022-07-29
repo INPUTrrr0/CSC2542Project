@@ -1,6 +1,6 @@
-from misc import util
-from misc.experience import Transition
-from worlds.cookbook import Cookbook
+from utils import util
+from utils.experience import Transition
+from environment.cookbook import Cookbook
 
 from collections import defaultdict, namedtuple
 import itertools
@@ -23,7 +23,7 @@ class CurriculumTrainer(object):
         self.subtask_index = util.Index()
         self.task_index = util.Index()
         with open(config.trainer.hints) as hints_f:
-            self.hints = yaml.load(hints_f)
+            self.hints = yaml.load(hints_f, Loader=yaml.SafeLoader)
 
         # initialize randomness
         self.random = np.random.RandomState(0)
