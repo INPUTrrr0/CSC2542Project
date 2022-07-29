@@ -1,0 +1,6 @@
+gym
+pygame
+stable-baselines3
+pyyaml
+numpy
+scikit-image

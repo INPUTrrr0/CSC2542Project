@@ -17,7 +17,7 @@ def main():
     config = configure()
     env = environment.CraftEnv(config)
     
-    model = DQN("MlpPolicy", env, verbose=1)
+    model = DQN("MlpPolicy", env, verbose=3)
     model.learn(total_timesteps=3000000, log_interval=4)
     # trainer = trainers.load(config)
     # trainer.train(model, world)

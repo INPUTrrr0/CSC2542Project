@@ -21,16 +21,20 @@ class CraftEnv(gym.Env):
 
         self.scenario = self.world.sample_scenario_with_goal(self.cookbook.index["wood"])  # goal
         self.state_before = None
+        self.n_step = 0
 
 
     def step(self, action):
+        self.n_step += 1
         reward, state = self.state_before.step(action)
         info = {}
         done = state.satisfies('wood', self.cookbook.index["wood"])
         state_feats = state.features()
+        print('step: {}, action:{}, state:{}, reward:{}'.format(self.n_step, state_feats, reward))
         return state_feats, reward, done, info
 
     def reset(self):
+        self.n_step = 0
         init_state = self.scenario.init()
         self.state_before = init_state
         init_state_feats = init_state.features()
