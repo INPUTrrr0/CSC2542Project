@@ -4,4 +4,4 @@
 `pip install -r requirements.txt`
 
 ## Test wrapped environment with DQN
-`python main_dqn.py`
+`python main_gym.py`
