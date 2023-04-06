@@ -1,4 +1,4 @@
-# Adaptive-Program-Synthesis-Guided-RL
+# Mine-HRL
 
 ## Requirements
 `pip install -r requirements.txt`
