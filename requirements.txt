@@ -4,3 +4,4 @@ stable-baselines3
 pyyaml
 numpy
 scikit-image
+PyQt5

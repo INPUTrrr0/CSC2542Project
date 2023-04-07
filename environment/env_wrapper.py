@@ -1,3 +1,4 @@
+# import gymnasium as gym
 import gym
 from pygame import init
 from environment.cookbook import Cookbook
@@ -17,7 +18,7 @@ class CraftEnv(gym.Env):
         self.action_space = gym.spaces.Discrete(n=self.n_action)
         self.observation_space = gym.spaces.Box(low=-np.ones(self.n_features) * np.inf,
                                                 high=np.ones(self.n_features) * np.inf)
-        self.spec = gym.envs.registration.EnvSpec('CraftEnv-v0')
+        # self.spec = gym.envs.registration.EnvSpec('CraftEnv-v0')
 
         self.scenario = self.world.sample_scenario_with_goal(self.cookbook.index["wood"])  # goal
         self.state_before = None
@@ -30,7 +31,7 @@ class CraftEnv(gym.Env):
         info = {}
         done = state.satisfies('wood', self.cookbook.index["wood"])
         state_feats = state.features()
-        print('step: {}, action:{}, state:{}, reward:{}'.format(self.n_step, state_feats, reward))
+        print('step: {}, action:{}, state:{}, reward:{}'.format(self.n_step, action, state_feats, reward))
         return state_feats, reward, done, info
 
     def reset(self):
