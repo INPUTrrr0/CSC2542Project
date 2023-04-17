@@ -19,7 +19,7 @@ class CraftEnv(gym.Env):
         self.config = config
         self.cookbook = Cookbook(config.recipes)
         self.world = CraftWorld(config)
-        self.writer = SummaryWriter('./log/dqn_ez')
+        self.writer = SummaryWriter('./log/ppo_ez')
 
         self.n_action = self.world.n_actions
         self.n_features = self.world.n_features

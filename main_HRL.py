@@ -7,7 +7,7 @@ import sys
 import traceback
 import yaml
 from torch.utils.tensorboard import SummaryWriter
-from stable_baselines3 import DQN
+from stable_baselines3 import DQN, PPO, A2C
 
 from utils.util import Struct
 import models
@@ -19,10 +19,7 @@ def main():
     config = configure()
     env = environment.CraftEnv(config)
     
-    model = DQN("MlpPolicy", env, verbose=3)
-    model.learn(total_timesteps=50000000, log_interval=100000)
-    # trainer = trainers.load(config)
-    # trainer.train(model, world)
+    # TODO: add HRL entries
 
 def configure():
     # load config
