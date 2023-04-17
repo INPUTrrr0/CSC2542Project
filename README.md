@@ -8,11 +8,11 @@
 
 ## Reference
 Environment:
-    [psketch](https://github.com/jacobandreas/psketch)
+[psketch](https://github.com/jacobandreas/psketch)
 
-    [program-synthesis-guided-RL](https://github.com/yycdavid/program-synthesis-guided-RL)
-    
-    [ProTo](https://github.com/sjtuytc/Neurips21-ProTo-Program-guided-Transformers-for-Program-guided-Tasks)
+[Program synthesis guided RL](https://github.com/yycdavid/program-synthesis-guided-RL)
+
+[ProTo](https://github.com/sjtuytc/Neurips21-ProTo-Program-guided-Transformers-for-Program-guided-Tasks)
 
 Please implement those agents in trainers (one folder for each), and add an entry in `main_HRL.py`:
 - Task A+B:
