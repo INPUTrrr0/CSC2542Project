@@ -24,6 +24,9 @@ N_ACTIONS = USE + 1
 
 
 def random_free(grid, random):
+    """
+    Find some random and free (no object) place in the map
+    """
     pos = None
     while pos is None:
         (x, y) = (random.randint(WIDTH), random.randint(HEIGHT))
@@ -47,6 +50,11 @@ def neighbors(pos, dir=None):
     return neighbors
 
 
+def dir_to_str(dir):
+    dir_dict = {0: 'UP', 1: 'DOWN', 2: 'LEFT', 3: 'RIGHT', 4: 'USE'}
+    return dir_dict[dir]
+
+
 class CraftWorld(object):
     def __init__(self, config):
         self.cookbook = Cookbook(config.recipes)
@@ -65,7 +73,7 @@ class CraftWorld(object):
         self.water_index = self.cookbook.index["water"]
         self.stone_index = self.cookbook.index["stone"]
 
-        self.random = np.random.RandomState(0)
+        self.random = np.random.RandomState(2)
 
     def sample_scenario_with_goal(self, goal):
         assert goal not in self.cookbook.environment
@@ -114,7 +122,10 @@ class CraftWorld(object):
         # generate crafting stations
         for i_ws in range(N_WORKSHOPS):
             ws_x, ws_y = random_free(grid, self.random)
-            grid[ws_x, ws_y, self.cookbook.index["workshop%d" % i_ws]] = 1
+            workshop_idx = self.cookbook.index["workshop%d" % i_ws]
+            if workshop_idx is None:
+                continue
+            grid[ws_x, ws_y, workshop_idx] = 1
 
         # generate init pos
         init_pos = random_free(grid, self.random)
@@ -179,6 +190,11 @@ class CraftScenario(object):
                            self.init_pos, self.init_dir, inventory)
         return state
 
+    def __str__(self):
+        out = np.argmax(self.init_grid, axis=2)
+        out[self.init_pos] = -1
+        return np.array_str(out.T)
+
 
 class CraftState(object):
     def __init__(self, scenario, grid, pos, dir, inventory):
@@ -216,7 +232,7 @@ class CraftState(object):
             pos_feats[1] /= HEIGHT
 
             dir_features = np.zeros(4)
-            dir_features[self.dir] = 1
+            dir_features[self.dir] = 1  # direction
 
             features = np.concatenate((grid_feats.ravel(),
                                        grid_feats_big_red.ravel(), self.inventory,
@@ -255,7 +271,7 @@ class CraftState(object):
             success = False
             for nx, ny in neighbors(self.pos, self.dir):
                 here = self.grid[nx, ny, :]
-                if not self.grid[nx, ny, :].any():
+                if not self.grid[nx, ny, :].any():  # is empty
                     continue
 
                 if here.sum() > 1:
@@ -323,3 +339,10 @@ class CraftState(object):
     def next_to(self, i_kind):
         x, y = self.pos
         return self.grid[x-1:x+2, y-1:y+2, i_kind].any()
+    
+    def __str__(self):
+        map = np.argmax(self.grid, axis=2)
+        map[self.pos] = -1
+        str = '\nMap:\n' + np.array_str(map.T)
+        str += '\nBag:\n' + np.array_str(self.inventory)
+        return str
