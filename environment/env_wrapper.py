@@ -52,7 +52,10 @@ class CraftEnv(gym.Env):
         if isDebug:
             print(f'step: {self.n_step}, action: {dir_to_str(action)}, reward: {reward},\nstate:{state}')
         if done:
-            print(f'Goal Reached within {self.n_step} steps!')
+            if truncated:
+                print(f'Timeout ({self.n_step} steps)!')
+            else:
+                print(f'Goal Reached within {self.n_step} steps!')
             self.writer.add_scalar('Time steps', self.n_step, self.n_episode)
             # sleep(3)
         return state_feats, reward, done, info
