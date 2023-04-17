@@ -19,7 +19,7 @@ class CraftEnv(gym.Env):
         self.config = config
         self.cookbook = Cookbook(config.recipes)
         self.world = CraftWorld(config)
-        self.writer = SummaryWriter('./log/ppo_ez')
+        self.writer = SummaryWriter('./log/oc_ez')
 
         self.n_action = self.world.n_actions
         self.n_features = self.world.n_features
@@ -67,7 +67,7 @@ class CraftEnv(gym.Env):
         init_state = self.scenario.init()
         self.state_before = init_state
         if isDebug:
-            print(f'Map:\n{self.sscenario}')
+            print(f'Map:\n{self.scenario}')
 
         init_state_feats = init_state.features()
         return init_state_feats

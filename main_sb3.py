@@ -20,8 +20,8 @@ def main():
     env = environment.CraftEnv(config)
     
     # model = DQN("MlpPolicy", env, verbose=3)
-    model = PPO("MlpPolicy", env, verbose=3)
-    # model = A2C("MlpPolicy", env, verbose=3)
+    # model = PPO("MlpPolicy", env, verbose=3)
+    model = A2C("MlpPolicy", env, verbose=3)
     model.learn(total_timesteps=50000000, log_interval=100000)
 
 def configure():

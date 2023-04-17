@@ -7,19 +7,19 @@ import sys
 import traceback
 import yaml
 from torch.utils.tensorboard import SummaryWriter
-from stable_baselines3 import DQN, PPO, A2C
+from trainers.option_critic import main
 
 from utils.util import Struct
-import models
-import trainers
 import environment
 
 
-def main():
+def run_HRL():
     config = configure()
     env = environment.CraftEnv(config)
     
     # TODO: add HRL entries
+    args = main.parser.parse_args()
+    main.run(args, env)
 
 def configure():
     # load config
@@ -48,4 +48,4 @@ def configure():
     return config
 
 if __name__ == "__main__":
-    main()
+    run_HRL()
