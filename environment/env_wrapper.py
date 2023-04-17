@@ -1,19 +1,25 @@
 # import gymnasium as gym
 from time import sleep
+from sys import gettrace
 import gym
-from pygame import init
+# from pygame import init
+from torch.utils.tensorboard import SummaryWriter
 from environment.cookbook import Cookbook
 import numpy as np
 from environment.craft import CraftWorld, dir_to_str
 
 
+isDebug = True if gettrace() else False
+
+
 class CraftEnv(gym.Env):
     def __init__(self, config):
         super(CraftEnv, self).__init__()
-        self.n_truncate = 1000000
+        self.n_truncate = 500000
         self.config = config
         self.cookbook = Cookbook(config.recipes)
         self.world = CraftWorld(config)
+        self.writer = SummaryWriter('./log/dqn_ez')
 
         self.n_action = self.world.n_actions
         self.n_features = self.world.n_features
@@ -26,6 +32,7 @@ class CraftEnv(gym.Env):
         self.scenario = self.world.sample_scenario_with_goal(self.cookbook.index["wood"])  # goal
         self.state_before = None
         self.n_step = 0
+        self.n_episode = 0
 
         print(f'Indices: {self.cookbook.index.contents}')
         print(f'Grabbable indices: {self.world.grabbable_indices},\
@@ -42,17 +49,23 @@ class CraftEnv(gym.Env):
         self.state_before = state
 
         state_feats = state.features()
-        print(f'step: {self.n_step}, action: {dir_to_str(action)}, reward: {reward},\nstate:{state}')
+        if isDebug:
+            print(f'step: {self.n_step}, action: {dir_to_str(action)}, reward: {reward},\nstate:{state}')
         if done:
             print(f'Goal Reached within {self.n_step} steps!')
-            sleep(3)
+            self.writer.add_scalar('Time steps', self.n_step, self.n_episode)
+            # sleep(3)
         return state_feats, reward, done, info
 
     def reset(self):
         self.n_step = 0
+        self.n_episode += 1
+
         init_state = self.scenario.init()
-        print(f'Map:\n{self.scenario}')
         self.state_before = init_state
+        if isDebug:
+            print(f'Map:\n{self.sscenario}')
+
         init_state_feats = init_state.features()
         return init_state_feats
 

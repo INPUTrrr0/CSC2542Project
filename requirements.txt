@@ -5,3 +5,4 @@ pyyaml
 numpy
 scikit-image
 PyQt5
+tensorboard

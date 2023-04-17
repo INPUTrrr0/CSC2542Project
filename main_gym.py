@@ -1,24 +1,26 @@
 #!/usr/bin/env python
 
-from utils.util import Struct
-import models
-import trainers
-import environment
-
 import logging
 import numpy as np
 import os
 import sys
 import traceback
 import yaml
+from torch.utils.tensorboard import SummaryWriter
 from stable_baselines3 import DQN
+
+from utils.util import Struct
+import models
+import trainers
+import environment
+
 
 def main():
     config = configure()
     env = environment.CraftEnv(config)
     
     model = DQN("MlpPolicy", env, verbose=3)
-    model.learn(total_timesteps=3000000, log_interval=4)
+    model.learn(total_timesteps=50000000, log_interval=100000)
     # trainer = trainers.load(config)
     # trainer.train(model, world)
 
