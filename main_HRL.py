@@ -17,13 +17,13 @@ def run_HRL():
     config = configure()
     env = environment.CraftEnv(config)
     
-    # TODO: add HRL entries
+    # TODO: add more HRL entries
     args = main.parser.parse_args()
     main.run(args, env)
 
 def configure():
     # load config
-    with open("config.yaml") as config_f:
+    with open("experiments/config_craft_ez.yaml") as config_f:
         config = Struct(**yaml.load(config_f, Loader=yaml.SafeLoader))
 
     # set up experiment

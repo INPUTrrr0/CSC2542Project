@@ -19,7 +19,7 @@ class CraftEnv(gym.Env):
         self.config = config
         self.cookbook = Cookbook(config.recipes)
         self.world = CraftWorld(config)
-        self.writer = SummaryWriter('./log/oc_ez')
+        self.writer = SummaryWriter(config.tensorboard_dir)
 
         self.n_action = self.world.n_actions
         self.n_features = self.world.n_features
@@ -29,7 +29,8 @@ class CraftEnv(gym.Env):
                                                 dtype=np.float64)
         # self.spec = gym.envs.registration.EnvSpec('CraftEnv-v0')
 
-        self.scenario = self.world.sample_scenario_with_goal(self.cookbook.index["wood"])  # goal
+        self.goal = self.config.world.goal
+        self.scenario = self.world.sample_scenario_with_goal(self.cookbook.index[self.goal])  # goal
         self.state_before = None
         self.n_step = 0
         self.n_episode = 0
@@ -37,6 +38,7 @@ class CraftEnv(gym.Env):
         print(f'Indices: {self.cookbook.index.contents}')
         print(f'Grabbable indices: {self.world.grabbable_indices},\
                 workshop indices: {self.world.workshop_indices}')
+        print(f'Goal: {self.goal}')
         print('----------------- Start -----------------')
 
 
@@ -45,7 +47,7 @@ class CraftEnv(gym.Env):
         reward, state = self.state_before.step(action)
         truncated = True if self.n_step > self.n_truncate else False
         info = {'truncated': truncated}
-        done = state.satisfies('wood', self.cookbook.index["wood"]) or truncated
+        done = state.satisfies(self.goal, self.cookbook.index[self.goal]) or truncated
         self.state_before = state
 
         state_feats = state.features()

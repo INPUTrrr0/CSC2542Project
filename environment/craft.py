@@ -7,13 +7,13 @@ import numpy as np
 from skimage.measure import block_reduce
 import time
 
-WIDTH = 10
-HEIGHT = 10
+# WIDTH = 10
+# HEIGHT = 10
 
-WINDOW_WIDTH = 5
-WINDOW_HEIGHT = 5
+# WINDOW_WIDTH = 5
+# WINDOW_HEIGHT = 5
 
-N_WORKSHOPS = 3
+# N_WORKSHOPS = 3
 
 DOWN = 0
 UP = 1
@@ -58,8 +58,14 @@ def dir_to_str(dir):
 class CraftWorld(object):
     def __init__(self, config):
         self.cookbook = Cookbook(config.recipes)
+        self.width = config.world.width
+        self.height = config.world.height
+        self.window_width = config.world.win_width
+        self.window_height = config.world.win_height
+        self.n_workshops = config.world.n_workshops
+
         self.n_features = \
-            2 * WINDOW_WIDTH * WINDOW_HEIGHT * self.cookbook.n_kinds + \
+            2 * self.window_width * self.window_height * self.cookbook.n_kinds + \
             self.cookbook.n_kinds + \
             4 + \
             1
@@ -69,7 +75,7 @@ class CraftWorld(object):
         self.grabbable_indices = [i for i in range(self.cookbook.n_kinds)
                                   if i not in self.non_grabbable_indices]
         self.workshop_indices = [self.cookbook.index["workshop%d" % i]
-                                 for i in range(N_WORKSHOPS)]
+                                 for i in range(self.n_workshops)]
         self.water_index = self.cookbook.index["water"]
         self.stone_index = self.cookbook.index["stone"]
 
@@ -90,16 +96,16 @@ class CraftWorld(object):
 
     def sample_scenario(self, ingredients, make_island=False, make_cave=False):
         # generate grid
-        grid = np.zeros((WIDTH, HEIGHT, self.cookbook.n_kinds))
+        grid = np.zeros((self.width, self.height, self.cookbook.n_kinds))
         i_bd = self.cookbook.index["boundary"]
         grid[0, :, i_bd] = 1
-        grid[WIDTH-1:, :, i_bd] = 1
+        grid[self.width-1:, :, i_bd] = 1
         grid[:, 0, i_bd] = 1
-        grid[:, HEIGHT-1:, i_bd] = 1
+        grid[:, self.height-1:, i_bd] = 1
 
         # treasure
         if make_island or make_cave:
-            (gx, gy) = (1 + np.random.randint(WIDTH-2), 1)
+            (gx, gy) = (1 + np.random.randint(self.width-2), 1)
             treasure_index = \
                 self.cookbook.index["gold"] if make_island else self.cookbook.index["gem"]
             wall_index = \
@@ -120,7 +126,7 @@ class CraftWorld(object):
                 grid[x, y, primitive] = 1
 
         # generate crafting stations
-        for i_ws in range(N_WORKSHOPS):
+        for i_ws in range(self.n_workshops):
             ws_x, ws_y = random_free(grid, self.random)
             workshop_idx = self.cookbook.index["workshop%d" % i_ws]
             if workshop_idx is None:
@@ -142,8 +148,8 @@ class CraftWorld(object):
             mstates = [transitions[0].m1] + [t.m2 for t in transitions]
             for state, mstate in zip(states, mstates):
                 win.clear()
-                for y in range(HEIGHT):
-                    for x in range(WIDTH):
+                for y in range(self.height):
+                    for x in range(self.width):
                         if not (state.grid[x, y, :].any() or (x, y) == state.pos):
                             continue
                         thing = state.grid[x, y, :].argmax()
@@ -170,8 +176,8 @@ class CraftWorld(object):
                             ch2 = name[-1]
                             color = curses.color_pair(10 + thing)
 
-                        win.addch(HEIGHT-y, x*2, ch1, color)
-                        win.addch(HEIGHT-y, x*2+1, ch2, color)
+                        win.addch(self.height-y, x*2, ch1, color)
+                        win.addch(self.height-y, x*2+1, ch2, color)
                 win.refresh()
                 time.sleep(1)
         curses.wrapper(_visualize)
@@ -212,24 +218,24 @@ class CraftState(object):
     def features(self):
         if self._cached_features is None:
             x, y = self.pos
-            hw = WINDOW_WIDTH // 2
-            hh = WINDOW_HEIGHT // 2
-            bhw = (WINDOW_WIDTH * WINDOW_WIDTH) // 2
-            bhh = (WINDOW_HEIGHT * WINDOW_HEIGHT) // 2
+            hw = self.world.window_width // 2
+            hh = self.world.window_height // 2
+            bhw = (self.world.window_width * self.world.window_width) // 2
+            bhh = (self.world.window_height * self.world.window_height) // 2
 
             grid_feats = array.pad_slice(self.grid, (x-hw, x+hw+1),
                                          (y-hh, y+hh+1))
             grid_feats_big = array.pad_slice(self.grid, (x-bhw, x+bhw+1),
                                              (y-bhh, y+bhh+1))
             grid_feats_big_red = block_reduce(grid_feats_big,
-                                              (WINDOW_WIDTH, WINDOW_HEIGHT, 1), func=np.max)
+                                              (self.world.window_width, self.world.window_height, 1), func=np.max)
 
             self.gf = grid_feats.transpose((2, 0, 1))
             self.gfb = grid_feats_big_red.transpose((2, 0, 1))
 
             pos_feats = np.asarray(self.pos)
-            pos_feats[0] /= WIDTH
-            pos_feats[1] /= HEIGHT
+            pos_feats[0] /= self.world.width
+            pos_feats[1] /= self.world.height
 
             dir_features = np.zeros(4)
             dir_features[self.dir] = 1  # direction
