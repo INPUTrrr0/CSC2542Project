@@ -1,0 +1,13 @@
+name: get_wood
+alg: oc_ez
+recipes: "resources/get_wood/recipes.yaml"
+world:
+  name: GetWood
+  goal: wood
+  height: 10
+  width: 10
+  win_height: 5
+  win_width: 5
+  n_workshops: 0
+tensorboard_dir: "experiments/get_wood/log/oc_ez"
+savepoint: "experiments/get_wood/model.pk"

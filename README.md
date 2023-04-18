@@ -6,6 +6,12 @@
 ## Test wrapped environment with stable baselines
 `python main_sb3.py`
 
+## Tasks
+- Level 1 - Get wood: randomly generate few woods in the environment, just need to get one of them
+
+- Level 2 - Build plank: get a wood, and use the wood in the workbench to get the plank
+
+
 ## Reference
 Environment:
 [psketch](https://github.com/jacobandreas/psketch)

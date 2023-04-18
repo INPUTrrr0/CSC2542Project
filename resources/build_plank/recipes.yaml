@@ -1,0 +1,12 @@
+environment:
+  - boundary
+  - workshop0
+
+
+primitives:
+  - wood
+
+recipes:
+  plank:
+    wood: 1
+    _at: workshop0

@@ -1,0 +1,13 @@
+name: build_plank
+alg: oc_ez
+recipes: resources/build_plank/recipes.yaml
+world:
+  name: BuildPlank
+  goal: plank
+  height: 10
+  width: 10
+  win_height: 5
+  win_width: 5
+  n_workshops: 1
+tensorboard_dir: experiments/build_plank/log/oc_ez
+savepoint: experiments/build_plank/model.pk

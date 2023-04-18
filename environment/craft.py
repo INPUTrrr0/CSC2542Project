@@ -23,29 +23,29 @@ USE = 4
 N_ACTIONS = USE + 1
 
 
-def random_free(grid, random):
+def random_free(grid, random, width, height):
     """
     Find some random and free (no object) place in the map
     """
     pos = None
     while pos is None:
-        (x, y) = (random.randint(WIDTH), random.randint(HEIGHT))
+        (x, y) = (random.randint(width), random.randint(height))
         if grid[x, y, :].any():
             continue
         pos = (x, y)
     return pos
 
 
-def neighbors(pos, dir=None):
+def neighbors(pos, width, height, dir=None):
     x, y = pos
     neighbors = []
     if x > 0 and (dir is None or dir == LEFT):
         neighbors.append((x-1, y))
     if y > 0 and (dir is None or dir == DOWN):
         neighbors.append((x, y-1))
-    if x < WIDTH - 1 and (dir is None or dir == RIGHT):
+    if x < width - 1 and (dir is None or dir == RIGHT):
         neighbors.append((x+1, y))
-    if y < HEIGHT - 1 and (dir is None or dir == UP):
+    if y < height - 1 and (dir is None or dir == UP):
         neighbors.append((x, y+1))
     return neighbors
 
@@ -122,19 +122,19 @@ class CraftWorld(object):
                     primitive == self.cookbook.index["gem"]:
                 continue
             for i in range(4):
-                (x, y) = random_free(grid, self.random)
+                (x, y) = random_free(grid, self.random, self.width, self.height)
                 grid[x, y, primitive] = 1
 
         # generate crafting stations
         for i_ws in range(self.n_workshops):
-            ws_x, ws_y = random_free(grid, self.random)
+            ws_x, ws_y = random_free(grid, self.random, self.width, self.height)
             workshop_idx = self.cookbook.index["workshop%d" % i_ws]
             if workshop_idx is None:
                 continue
             grid[ws_x, ws_y, workshop_idx] = 1
 
         # generate init pos
-        init_pos = random_free(grid, self.random)
+        init_pos = random_free(grid, self.random, self.width, self.height)
 
         return CraftScenario(grid, init_pos, self)
 
@@ -275,7 +275,7 @@ class CraftState(object):
             cookbook = self.world.cookbook
             dx, dy = (0, 0)
             success = False
-            for nx, ny in neighbors(self.pos, self.dir):
+            for nx, ny in neighbors(self.pos, self.world.width, self.world.height, self.dir):
                 here = self.grid[nx, ny, :]
                 if not self.grid[nx, ny, :].any():  # is empty
                     continue
