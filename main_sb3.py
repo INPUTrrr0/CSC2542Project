@@ -24,7 +24,7 @@ def main():
 
 def configure():
     # load config
-    with open("experiments/config_build_plank.yaml") as config_f:
+    with open("experiments/config_build_bridge.yaml") as config_f:
         config = Struct(**yaml.load(config_f, Loader=yaml.SafeLoader))
 
     # set up experiment

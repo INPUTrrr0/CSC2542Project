@@ -3,8 +3,13 @@
 ## Requirements
 `pip install -r requirements.txt`
 
-## Test wrapped environment with stable baselines
+## Test wrapped environment with stable standard RL baselines
 `python main_sb3.py`
+
+- If you are not familiar with the environment, run `main_sb3.py` in debug mode, and the environment states will be verbosely printed, where current location is printed as -1
+
+## Test wrapped environment with HRL baselines
+`python main_HRL.py`
 
 ## Tasks
 Specify task configurations in `main_xxx.py`, first line of `configure()`
@@ -43,3 +48,4 @@ Please implement those agents in trainers (one folder for each), and add an entr
 - Plotting (curve for steps to reach the goals, successful rate, ...)
 - Systematic logging
 - Different Levels (map size, task complexity (horizon required), OOD, stochasticity (both levels))
+- Better state repr (currently we are using simple tricks, and bag (inventory) state is redundant)

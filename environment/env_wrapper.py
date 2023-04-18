@@ -18,7 +18,8 @@ class CraftEnv(gym.Env):
         self.config = config
         self.cookbook = Cookbook(config.recipes)
         self.world = CraftWorld(config)
-        self.writer = SummaryWriter(config.tensorboard_dir)
+        if not isDebug:
+            self.writer = SummaryWriter(config.tensorboard_dir)
 
         self.n_action = self.world.n_actions
         self.n_features = self.world.n_features
@@ -57,7 +58,8 @@ class CraftEnv(gym.Env):
                 print(f'Timeout ({self.n_step} steps)!')
             else:
                 print(f'Goal Reached within {self.n_step} steps!')
-            self.writer.add_scalar('Time steps', self.n_step, self.n_episode)
+            if not isDebug:
+                self.writer.add_scalar('Time steps', self.n_step, self.n_episode)
             # sleep(3)
         return state_feats, reward, done, info
 
