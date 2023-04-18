@@ -51,11 +51,17 @@ def neighbors(pos, width, height, dir=None):
 
 
 def dir_to_str(dir):
+    """
+    UP and DOWN are flipped in visualization
+    """
     dir_dict = {0: 'UP', 1: 'DOWN', 2: 'LEFT', 3: 'RIGHT', 4: 'USE'}
     return dir_dict[dir]
 
 
 class CraftWorld(object):
+    """
+    Information of the world
+    """
     def __init__(self, config):
         self.cookbook = Cookbook(config.recipes)
         self.width = config.world.width
@@ -82,6 +88,9 @@ class CraftWorld(object):
         self.random = np.random.RandomState(2)
 
     def sample_scenario_with_goal(self, goal):
+        """
+        goal: idx (str_goal -> idx: cookbook.index[str_goal])
+        """
         assert goal not in self.cookbook.environment
         if goal in self.cookbook.primitives:
             make_island = goal == self.cookbook.index["gold"]
@@ -184,6 +193,9 @@ class CraftWorld(object):
 
 
 class CraftScenario(object):
+    """
+    Init state of the world
+    """
     def __init__(self, grid, init_pos, world):
         self.init_grid = grid
         self.init_pos = init_pos
@@ -203,6 +215,9 @@ class CraftScenario(object):
 
 
 class CraftState(object):
+    """
+    Environmental state
+    """
     def __init__(self, scenario, grid, pos, dir, inventory):
         self.scenario = scenario
         self.world = scenario.world
@@ -307,6 +322,7 @@ class CraftState(object):
                     # TODO not with strings
                     workshop = cookbook.index.get(thing)
                     for output, inputs in cookbook.recipes.items():
+                        # make any available tools
                         if inputs["_at"] != workshop:
                             continue
                         yld = inputs["_yield"] if "_yield" in inputs else 1

@@ -2,7 +2,6 @@
 from time import sleep
 from sys import gettrace
 import gym
-# from pygame import init
 from torch.utils.tensorboard import SummaryWriter
 from environment.cookbook import Cookbook
 import numpy as np

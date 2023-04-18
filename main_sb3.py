@@ -10,8 +10,6 @@ from torch.utils.tensorboard import SummaryWriter
 from stable_baselines3 import DQN, PPO, A2C
 
 from utils.util import Struct
-import models
-import trainers
 import environment
 
 
@@ -20,13 +18,13 @@ def main():
     env = environment.CraftEnv(config)
     
     # model = DQN("MlpPolicy", env, verbose=3)
-    # model = PPO("MlpPolicy", env, verbose=3)
-    model = A2C("MlpPolicy", env, verbose=3)
+    model = PPO("MlpPolicy", env, verbose=3)
+    # model = A2C("MlpPolicy", env, verbose=3)
     model.learn(total_timesteps=50000000, log_interval=100000)
 
 def configure():
     # load config
-    with open("experiments/config_get_wood.yaml") as config_f:
+    with open("experiments/config_build_plank.yaml") as config_f:
         config = Struct(**yaml.load(config_f, Loader=yaml.SafeLoader))
 
     # set up experiment

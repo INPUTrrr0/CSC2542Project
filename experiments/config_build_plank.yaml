@@ -1,5 +1,4 @@
 name: build_plank
-alg: oc_ez
 recipes: resources/build_plank/recipes.yaml
 world:
   name: BuildPlank
@@ -9,5 +8,5 @@ world:
   win_height: 5
   win_width: 5
   n_workshops: 1
-tensorboard_dir: experiments/build_plank/log/oc_ez
+tensorboard_dir: experiments/build_plank/log/oc
 savepoint: experiments/build_plank/model.pk
