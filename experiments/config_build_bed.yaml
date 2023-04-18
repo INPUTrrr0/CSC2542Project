@@ -8,5 +8,8 @@ world:
   win_height: 5
   win_width: 5
   n_workshops: 2
+  num_res:
+    wood: 4
+    grass: 4
 tensorboard_dir: experiments/build_bed/log/oc
 savepoint: experiments/build_bed/model.pk

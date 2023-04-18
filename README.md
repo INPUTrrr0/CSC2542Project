@@ -15,8 +15,14 @@
 Specify task configurations in `main_xxx.py`, first line of `configure()`
 - Level 1 - Get wood: randomly generate few woods in the environment, just need to get one of them
 
-- Level 2 - Build plank: get a wood, and use the wood in the workbench to get the plank; Build bridge: get a wood and a iron, and use the workbench
+- Level 2 - Build plank: get a wood, and use the wood in the workbench to get the plank; Build bridge: get a wood and a iron, and use the workbench; Build bed: get a wood and a grass, use workbench_0 to convert the wood into a plank, then use workbench_1 to convert the plank and grass into a bed
 
+Craft your own task:
+- add an config in `./experiments/`
+
+- add an recipe in `./resources/` (refer to `recipes_all.yaml`)
+
+- Specify task configurations in `main_xxx.py`
 
 ## Reference
 Environment:
@@ -44,6 +50,7 @@ Please implement those agents in trainers (one folder for each), and add an entr
 
 # TODO
 - Implementing agents above (manage the hyperparameters in a yaml for each algorithm)
+- Give more reward (>1) if it uses less time steps
 - Eval mode
 - Plotting (curve for steps to reach the goals, successful rate, ...)
 - Systematic logging

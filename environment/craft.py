@@ -69,6 +69,7 @@ class CraftWorld(object):
         self.window_width = config.world.win_width
         self.window_height = config.world.win_height
         self.n_workshops = config.world.n_workshops
+        self.num_res = config.world.num_res.__dict__ if 'num_res' in config.world.__dict__.keys() else None
 
         self.n_features = \
             2 * self.window_width * self.window_height * self.cookbook.n_kinds + \
@@ -126,13 +127,20 @@ class CraftWorld(object):
                         grid[gx+i, gy+j, wall_index] = 1
 
         # ingredients
-        for primitive in self.cookbook.primitives:
-            if primitive == self.cookbook.index["gold"] or \
-                    primitive == self.cookbook.index["gem"]:
-                continue
-            for i in range(4):
-                (x, y) = random_free(grid, self.random, self.width, self.height)
-                grid[x, y, primitive] = 1
+        if self.num_res is None:
+            for primitive in self.cookbook.primitives:
+                if primitive == self.cookbook.index["gold"] or \
+                        primitive == self.cookbook.index["gem"]:
+                    continue
+                for i in range(4):
+                    (x, y) = random_free(grid, self.random, self.width, self.height)
+                    grid[x, y, primitive] = 1
+        else:  # num of resources defined by config
+            for k, v in self.num_res.items():
+                primitive = self.cookbook.index[k]
+                for i in range(v):
+                    (x, y) = random_free(grid, self.random, self.width, self.height)
+                    grid[x, y, primitive] = 1
 
         # generate crafting stations
         for i_ws in range(self.n_workshops):

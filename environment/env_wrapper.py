@@ -60,7 +60,8 @@ class CraftEnv(gym.Env):
                 print(f'Goal Reached within {self.n_step} steps!')
             if not isDebug:
                 self.writer.add_scalar('Time steps', self.n_step, self.n_episode)
-            # sleep(3)
+            else:
+                sleep(3)
         return state_feats, reward, done, info
 
     def reset(self):
