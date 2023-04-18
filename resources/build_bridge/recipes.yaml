@@ -1,0 +1,14 @@
+environment:
+  - boundary
+  - workshop0
+
+
+primitives:
+  - wood
+  - iron
+
+recipes:
+  bridge:
+    wood: 1
+    iron: 1
+    _at: workshop0

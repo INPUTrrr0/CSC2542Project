@@ -9,7 +9,7 @@
 ## Tasks
 - Level 1 - Get wood: randomly generate few woods in the environment, just need to get one of them
 
-- Level 2 - Build plank: get a wood, and use the wood in the workbench to get the plank
+- Level 2 - Build plank: get a wood, and use the wood in the workbench to get the plank; Build bridge: get a wood and a iron, and use the workbench
 
 
 ## Reference
@@ -37,7 +37,7 @@ Please implement those agents in trainers (one folder for each), and add an entr
 
 
 # TODO
-- Implementing agents above
+- Implementing agents above (manage the hyperparameters in a yaml for each algorithm)
 - Plotting (curve for steps to reach the goals, successful rate, ...)
 - Systematic logging
 - Different Levels (map size, task complexity (horizon required), OOD, stochasticity (both levels))
