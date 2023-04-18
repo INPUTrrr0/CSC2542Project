@@ -2,7 +2,7 @@ name: build_bridge
 recipes: resources/build_bridge/recipes.yaml
 world:
   name: BuildBridge
-  goal: plank
+  goal: bridge
   height: 10
   width: 10
   win_height: 5
