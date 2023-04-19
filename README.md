@@ -21,9 +21,12 @@ Specify task configurations in `main_xxx.py`, first line of `configure()`
 
 - Level 4 - Get gem (6 options): get wood, iron, use workbench_0 to convert the wood into a stick, then use workbench_1 to convert the stick and iron into a axe, use axe to break stone, and get gem; Get gold (5 options): get wood, iron, use workbench to build bridge, use the bridge in a right place (if not, the agent need to rebuild) , and get gold;
 
+Noted that, "option" here means how many human instructions given (ideally it may learn those options). Of course, human can also regard all "get" as an option.
+
 - Variants: larger/smaller map size, more/less resource, distraction workshops/items (no use for achieving the goal), OOD, stochasticity
 
-Noted that, "option" here means how many human instructions given (ideally it may learn those options). Of course, human can also regard all "get" as an option.
+- Different rewarding scheme: `./environment/env_wrapper.py`
+
 
 
 Craft your own task:
@@ -35,7 +38,7 @@ Craft your own task:
 
 ## Reference
 Environment:
-[psketch](https://github.com/jacobandreas/psketch)
+[psketch](https://github.com/jacobandreas/psketch)([paper](https://arxiv.org/pdf/1611.01796.pdf))
 
 [Program synthesis guided RL](https://github.com/yycdavid/program-synthesis-guided-RL)
 
@@ -59,7 +62,6 @@ Please implement those agents in trainers (one folder for each), and add an entr
 
 # TODO
 - Implementing agents above (manage the hyperparameters in a yaml for each algorithm)
-- Give more reward (>1) if it uses less time steps
 - Eval mode
 - Plotting (curve for steps to reach the goals, successful rate, ...)
 - Systematic logging
