@@ -4,6 +4,7 @@ world:
   name: BuildBed1
   goal: bed
   switch_init_pos: true
+  procgen_ood: false
   height: 10
   width: 10
   win_height: 5

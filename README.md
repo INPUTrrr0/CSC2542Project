@@ -13,6 +13,9 @@
 
 ## Tasks
 Specify task configurations in `main_xxx.py`, first line of `configure()`
+
+The levels listed here are "clean" environments without the "variants" shown below.
+
 - Level 1 - Get wood (1 option): randomly generate few woods in the environment, just need to get one of them;
 
 - Level 2 - Build plank (2 options): get a wood, and use the wood in the workbench to get the plank; Build bridge (3 options): get a wood and a iron, and use the workbench; 
@@ -23,7 +26,7 @@ Specify task configurations in `main_xxx.py`, first line of `configure()`
 
 Noted that, "option" here means how many human instructions given (ideally it may learn those options). Of course, human can also regard all "get" as an option.
 
-- Variants: larger/smaller map size, more/less resource, distraction workshops/items (no use for achieving the goal), OOD, stochasticity
+- Variants: larger/smaller map size, more/less resource (default: 4 for each essential resources), distraction workshops/items (no use for achieving the goal), OOD (initial world scenario changes on each reset()), stochasticity
 
 - Different rewarding scheme: `./environment/env_wrapper.py`
 

@@ -65,6 +65,7 @@ class CraftEnv(gym.Env):
             if not isDebug:
                 self.writer.add_scalar('Time steps', self.n_step, self.n_episode)
             else:
+                print('------------------------------------------')
                 sleep(3)
         return state_feats, reward, done, info
 
@@ -72,6 +73,8 @@ class CraftEnv(gym.Env):
         self.n_step = 0
         self.n_episode += 1
 
+        if self.config.world.procgen_ood:
+            self.scenario = self.world.sample_scenario_with_goal(self.cookbook.index[self.goal])  # sample again
         init_state = self.scenario.init()
         self.state_before = init_state
         if isDebug:
