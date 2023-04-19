@@ -13,9 +13,18 @@
 
 ## Tasks
 Specify task configurations in `main_xxx.py`, first line of `configure()`
-- Level 1 - Get wood: randomly generate few woods in the environment, just need to get one of them
+- Level 1 - Get wood (1 option): randomly generate few woods in the environment, just need to get one of them;
 
-- Level 2 - Build plank: get a wood, and use the wood in the workbench to get the plank; Build bridge: get a wood and a iron, and use the workbench; Build bed: get a wood and a grass, use workbench_0 to convert the wood into a plank, then use workbench_1 to convert the plank and grass into a bed
+- Level 2 - Build plank (2 options): get a wood, and use the wood in the workbench to get the plank; Build bridge (3 options): get a wood and a iron, and use the workbench; 
+
+- Level 3 - Build bed (4 options): get a wood and a grass, use workbench_0 to convert the wood into a plank, then use workbench_1 to convert the plank and grass into a bed; 
+
+- Level 4 - Get gem (6 options): get wood, iron, use workbench_0 to convert the wood into a stick, then use workbench_1 to convert the stick and iron into a axe, use axe to break stone, and get gem;
+
+- Variants: larger/smaller map size, more/less resource, OOD, stochasticity
+
+Noted that, "option" here means how many human instructions given (ideally it may learn those options). Of course, human can also regard all "get" as an option.
+
 
 Craft your own task:
 - add an config in `./experiments/`
@@ -34,7 +43,7 @@ Environment:
 
 Please implement those agents in trainers (one folder for each), and add an entry in `main_HRL.py`:
 - Task A+B:
-    [Option-critic](https://github.com/lweitkamp/option-critic-pytorch) and the related work
+    [Option-critic](https://github.com/lweitkamp/option-critic-pytorch) and the related work ([Proximal Policy OC](https://github.com/mklissa/PPOC), [Interest OC](https://github.com/kkhetarpal/ioc))
 
     [DSC](https://github.com/deep-skill-chaining/deep-skill-chaining)
 

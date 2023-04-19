@@ -1,0 +1,15 @@
+name: get_gem
+recipes: resources/get_gem/recipes.yaml
+world:
+  name: GetGem
+  goal: gem
+  height: 10
+  width: 10
+  win_height: 5
+  win_width: 5
+  n_workshops: 2
+  num_res:
+    wood: 4
+    iron: 4
+tensorboard_dir: experiments/get_gem/log/ppo
+savepoint: experiments/get_gem/model.pk

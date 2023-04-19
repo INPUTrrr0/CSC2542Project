@@ -8,5 +8,5 @@ world:
   win_height: 5
   win_width: 5
   n_workshops: 1
-tensorboard_dir: experiments/build_bridge/log/oc
+tensorboard_dir: experiments/build_bridge/log/dqn
 savepoint: experiments/build_bridge/model.pk

@@ -1,0 +1,15 @@
+name: build_bed
+recipes: resources/build_bed/recipes.yaml
+world:
+  name: BuildBed
+  goal: bed
+  height: 10
+  width: 10
+  win_height: 5
+  win_width: 5
+  n_workshops: 2
+  num_res:
+    wood: 1
+    grass: 1
+tensorboard_dir: experiments/build_bed_1_res/log/ppo
+savepoint: experiments/build_bed_1_res/model.pk

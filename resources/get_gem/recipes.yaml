@@ -1,0 +1,20 @@
+environment:
+  - boundary
+  - workshop0
+  - workshop1
+  - stone
+
+primitives:
+  - iron
+  - wood
+  - gem
+
+recipes:
+  axe:
+    stick: 1
+    iron: 1
+    _at: workshop0
+
+  stick:
+    wood: 1
+    _at: workshop1
