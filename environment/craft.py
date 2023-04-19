@@ -64,6 +64,7 @@ class CraftWorld(object):
     """
     def __init__(self, config):
         self.cookbook = Cookbook(config.recipes)
+        self.switch_init_pos = config.world.switch_init_pos
         self.width = config.world.width
         self.height = config.world.height
         self.window_width = config.world.win_width
@@ -212,9 +213,14 @@ class CraftScenario(object):
 
     def init(self):
         inventory = np.zeros(self.world.cookbook.n_kinds)
+        if self.world.switch_init_pos:
+            self.switch_init_pos()
         state = CraftState(self, self.init_grid,
                            self.init_pos, self.init_dir, inventory)
         return state
+    
+    def switch_init_pos(self):
+        self.init_pos = random_free(self.init_grid, self.world.random, self.world.width, self.world.height)
 
     def __str__(self):
         out = np.argmax(self.init_grid, axis=2)

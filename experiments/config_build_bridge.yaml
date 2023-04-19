@@ -3,10 +3,11 @@ recipes: resources/build_bridge/recipes.yaml
 world:
   name: BuildBridge
   goal: bridge
+  switch_init_pos: true
   height: 10
   width: 10
   win_height: 5
   win_width: 5
   n_workshops: 1
-tensorboard_dir: experiments/build_bridge/log/dqn
+tensorboard_dir: experiments/build_bridge/log/ppo
 savepoint: experiments/build_bridge/model.pk

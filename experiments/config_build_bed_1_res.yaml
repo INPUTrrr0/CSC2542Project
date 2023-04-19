@@ -1,8 +1,9 @@
-name: build_bed
+name: build_bed_1_res
 recipes: resources/build_bed/recipes.yaml
 world:
-  name: BuildBed
+  name: BuildBed1
   goal: bed
+  switch_init_pos: true
   height: 10
   width: 10
   win_height: 5

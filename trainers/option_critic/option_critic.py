@@ -134,7 +134,7 @@ class OptionCriticFeatures(nn.Module):
         self.features = nn.Sequential(
             nn.Linear(in_features, 32),
             nn.ReLU(),
-            nn.Linear(32, 64),
+            nn.Linear(64, 64),
             nn.ReLU()
         )
 

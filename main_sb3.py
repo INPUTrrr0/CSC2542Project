@@ -20,11 +20,12 @@ def main():
     # model = DQN("MlpPolicy", env, verbose=3)
     model = PPO("MlpPolicy", env, verbose=3)
     # model = A2C("MlpPolicy", env, verbose=3)
-    model.learn(total_timesteps=50000000, log_interval=100000)
+    print(model.policy)
+    model.learn(total_timesteps=10000000, log_interval=100000)
 
 def configure():
     # load config
-    with open("experiments/config_build_bed.yaml") as config_f:
+    with open("experiments/config_get_gem_1_res.yaml") as config_f:
         config = Struct(**yaml.load(config_f, Loader=yaml.SafeLoader))
 
     # set up experiment

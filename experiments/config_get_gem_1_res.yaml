@@ -1,7 +1,7 @@
-name: get_gem
+name: get_gem_1_res
 recipes: resources/get_gem/recipes.yaml
 world:
-  name: GetGem
+  name: GetGem1
   goal: gem
   switch_init_pos: true
   height: 10
@@ -10,7 +10,7 @@ world:
   win_width: 5
   n_workshops: 2
   num_res:
-    wood: 4
-    iron: 4
-tensorboard_dir: experiments/get_gem/log/ppo
-savepoint: experiments/get_gem/model.pk
+    wood: 1
+    iron: 1
+tensorboard_dir: experiments/get_gem_1_res/log/ppo
+savepoint: experiments/get_gem_1_res/model.pk

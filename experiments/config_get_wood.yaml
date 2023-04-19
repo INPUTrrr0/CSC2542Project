@@ -3,6 +3,7 @@ recipes: "resources/get_wood/recipes.yaml"
 world:
   name: GetWood
   goal: wood
+  switch_init_pos: true
   height: 10
   width: 10
   win_height: 5
