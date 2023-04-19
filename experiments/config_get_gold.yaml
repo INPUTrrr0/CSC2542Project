@@ -1,0 +1,16 @@
+name: get_gold
+recipes: resources/get_gold/recipes.yaml
+world:
+  name: GetGold
+  goal: gold
+  switch_init_pos: true
+  height: 10
+  width: 10
+  win_height: 5
+  win_width: 5
+  n_workshops: 1
+  num_res:
+    wood: 4
+    iron: 4
+tensorboard_dir: experiments/get_gold/log/ppo
+savepoint: experiments/get_gold/model.pk

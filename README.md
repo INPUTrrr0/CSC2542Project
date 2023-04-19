@@ -19,9 +19,9 @@ Specify task configurations in `main_xxx.py`, first line of `configure()`
 
 - Level 3 - Build bed (4 options): get a wood and a grass, use workbench_0 to convert the wood into a plank, then use workbench_1 to convert the plank and grass into a bed; 
 
-- Level 4 - Get gem (6 options): get wood, iron, use workbench_0 to convert the wood into a stick, then use workbench_1 to convert the stick and iron into a axe, use axe to break stone, and get gem;
+- Level 4 - Get gem (6 options): get wood, iron, use workbench_0 to convert the wood into a stick, then use workbench_1 to convert the stick and iron into a axe, use axe to break stone, and get gem; Get gold (5 options): get wood, iron, use workbench to build bridge, use the bridge in a right place (if not, the agent need to rebuild) , and get gold;
 
-- Variants: larger/smaller map size, more/less resource, OOD, stochasticity
+- Variants: larger/smaller map size, more/less resource, distraction workshops/items (no use for achieving the goal), OOD, stochasticity
 
 Noted that, "option" here means how many human instructions given (ideally it may learn those options). Of course, human can also regard all "get" as an option.
 
