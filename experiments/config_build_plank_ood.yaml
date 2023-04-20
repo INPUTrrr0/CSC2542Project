@@ -10,5 +10,5 @@ world:
   win_height: 5
   win_width: 5
   n_workshops: 1
-tensorboard_dir: experiments/build_plank_ood/log/oc
+tensorboard_dir: experiments/
 savepoint: experiments/build_plank_ood/model.pk

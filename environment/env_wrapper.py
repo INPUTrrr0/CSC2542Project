@@ -14,12 +14,12 @@ isDebug = True if gettrace() else False
 class CraftEnv(gym.Env):
     def __init__(self, config):
         super(CraftEnv, self).__init__()
+        self.alg_name = None
         self.n_truncate = 500000
         self.config = config
         self.cookbook = Cookbook(config.recipes)
         self.world = CraftWorld(config)
-        if not isDebug:
-            self.writer = SummaryWriter(config.tensorboard_dir)
+        self.writer = None
 
         self.n_action = self.world.n_actions
         self.n_features = self.world.n_features
@@ -41,6 +41,13 @@ class CraftEnv(gym.Env):
         print(f'Goal: {self.goal}')
         print('----------------- Start -----------------')
 
+    def set_episode(self, episode):
+        self.n_episode = episode
+    
+    def set_alg_name(self, name):
+        self.alg_name = name
+        if not isDebug:
+            self.writer = SummaryWriter(self.config.tensorboard_dir.rstrip('/') + f'/{self.config.name}/log/{name}')
 
     def step(self, action):
         self.n_step += 1
@@ -63,7 +70,8 @@ class CraftEnv(gym.Env):
             else:
                 print(f'Ep {self.n_episode}: Goal Reached within {self.n_step} steps!')
             if not isDebug:
-                self.writer.add_scalar('Time steps', self.n_step, self.n_episode)
+                if self.writer is not None:
+                    self.writer.add_scalar('Time steps', self.n_step, self.n_episode)
             else:
                 print('------------------------------------------')
                 sleep(3)
@@ -74,7 +82,7 @@ class CraftEnv(gym.Env):
         self.n_episode += 1
 
         if self.config.world.procgen_ood:
-            self.scenario = self.world.sample_scenario_with_goal(self.cookbook.index[self.goal])  # sample again
+            self.sample_another_scenario()  # sample again
         init_state = self.scenario.init()
         self.state_before = init_state
         if isDebug:
@@ -82,7 +90,10 @@ class CraftEnv(gym.Env):
 
         init_state_feats = init_state.features()
         return init_state_feats
+    
+    def sample_another_scenario(self):
+        self.scenario = self.world.sample_scenario_with_goal(self.cookbook.index[self.goal])
 
     def render(self, mode='human'):
-        print("[not supporting rendering]")
-        raise NotImplementedError
+        print(f'Ep {self.n_episode}, step: {self.n_step}\nstate:{self.state_before}')
+        print('------------------------------------------')

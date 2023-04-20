@@ -47,7 +47,9 @@ Environment:
 
 [ProTo](https://github.com/sjtuytc/Neurips21-ProTo-Program-guided-Transformers-for-Program-guided-Tasks)
 
-Please implement those agents in trainers (one folder for each), and add an entry in `main_HRL.py`:
+[NSGS](https://github.com/srsohn/subtask-graph-execution)
+
+Please implement those agents in trainers (one folder for each), and add an entry in `main_HRL.py` (like `class OptionCritic`):
 - Task A+B:
     [Option-critic](https://github.com/lweitkamp/option-critic-pytorch) and the related work ([Proximal Policy OC](https://github.com/mklissa/PPOC), [Interest OC](https://github.com/kkhetarpal/ioc))
 
@@ -68,5 +70,5 @@ Please implement those agents in trainers (one folder for each), and add an entr
 - Eval mode
 - Plotting (curve for steps to reach the goals, successful rate, ...)
 - Systematic logging
-- Different Levels (map size, task complexity (horizon required), OOD, stochasticity (both levels))
+- Different Levels (map size, task complexity (horizon required), OOD (or training in one env for a period of time, then switch), stochasticity (both levels))
 - Better state repr (currently we are using simple tricks, and bag (inventory) state is redundant)

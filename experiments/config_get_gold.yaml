@@ -13,5 +13,5 @@ world:
   num_res:
     wood: 4
     iron: 4
-tensorboard_dir: experiments/get_gold/log/dqn
+tensorboard_dir: experiments/
 savepoint: experiments/get_gold/model.pk

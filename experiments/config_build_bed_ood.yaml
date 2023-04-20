@@ -13,5 +13,5 @@ world:
   num_res:
     wood: 4
     grass: 4
-tensorboard_dir: experiments/build_bed_ood/log/oc
+tensorboard_dir: experiments/
 savepoint: experiments/build_bed_ood/model.pk

@@ -1,5 +1,5 @@
 name: get_wood
-recipes: "resources/get_wood/recipes.yaml"
+recipes: resources/get_wood/recipes.yaml
 world:
   name: GetWood
   goal: wood
@@ -10,5 +10,5 @@ world:
   win_height: 5
   win_width: 5
   n_workshops: 0
-tensorboard_dir: "experiments/get_wood/log/oc"
-savepoint: "experiments/get_wood/model.pk"
+tensorboard_dir: experiments/
+savepoint: experiments/get_wood/model.pk

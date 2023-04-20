@@ -13,17 +13,30 @@ from utils.util import Struct
 import environment
 
 
+class OptionCritic:
+    def __init__(self, env) -> None:
+        self.args = main.parser.parse_args()
+        self.env = env
+    
+    def learn(self):
+        self.args.env = self.env.config.name
+        self.args.exp = self.env.alg_name
+        main.run(self.args, self.env)
+
+
 def run_HRL():
     config = configure()
     env = environment.CraftEnv(config)
     
     # TODO: add more HRL entries
-    args = main.parser.parse_args()
-    main.run(args, env)
+    trainer = OptionCritic(env)
+    env.set_alg_name(trainer.__class__.__name__)
+    trainer.learn()
+
 
 def configure():
     # load config
-    with open("experiments/config_get_gem.yaml") as config_f:
+    with open("experiments/config_build_plank_ood.yaml") as config_f:
         config = Struct(**yaml.load(config_f, Loader=yaml.SafeLoader))
 
     # set up experiment
@@ -46,6 +59,7 @@ def configure():
     logging.info(str(config))
 
     return config
+
 
 if __name__ == "__main__":
     run_HRL()

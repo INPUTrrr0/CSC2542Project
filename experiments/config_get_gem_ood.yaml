@@ -13,5 +13,5 @@ world:
   num_res:
     wood: 4
     iron: 4
-tensorboard_dir: experiments/get_gem_ood/log/ppo
+tensorboard_dir: experiments/
 savepoint: experiments/get_gem_ood/model.pk
