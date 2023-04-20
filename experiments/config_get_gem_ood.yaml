@@ -1,0 +1,17 @@
+name: get_gem_ood
+recipes: resources/get_gem/recipes.yaml
+world:
+  name: GetGemOOD
+  goal: gem
+  switch_init_pos: true
+  procgen_ood: true
+  height: 10
+  width: 10
+  win_height: 5
+  win_width: 5
+  n_workshops: 2
+  num_res:
+    wood: 4
+    iron: 4
+tensorboard_dir: experiments/get_gem_ood/log/ppo
+savepoint: experiments/get_gem_ood/model.pk

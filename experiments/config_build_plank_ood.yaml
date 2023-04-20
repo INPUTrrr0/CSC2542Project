@@ -1,0 +1,14 @@
+name: build_plank_ood
+recipes: resources/build_plank/recipes.yaml
+world:
+  name: BuildPlankOOD
+  goal: plank
+  switch_init_pos: true
+  procgen_ood: true
+  height: 10
+  width: 10
+  win_height: 5
+  win_width: 5
+  n_workshops: 1
+tensorboard_dir: experiments/build_plank_ood/log/oc
+savepoint: experiments/build_plank_ood/model.pk

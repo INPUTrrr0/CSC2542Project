@@ -1,0 +1,14 @@
+name: build_bridge_ood
+recipes: resources/build_bridge/recipes.yaml
+world:
+  name: BuildBridgeOOD
+  goal: bridge
+  switch_init_pos: true
+  procgen_ood: true
+  height: 10
+  width: 10
+  win_height: 5
+  win_width: 5
+  n_workshops: 1
+tensorboard_dir: experiments/build_bridge_ood/log/ppo
+savepoint: experiments/build_bridge_ood/model.pk

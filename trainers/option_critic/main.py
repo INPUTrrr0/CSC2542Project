@@ -35,7 +35,7 @@ parser.add_argument('--max_steps_ep', type=int, default=500000, help='number of 
 parser.add_argument('--max_steps_total', type=int, default=int(1e7), help='number of maximum steps to take.')
 parser.add_argument('--cuda', type=bool, default=True, help='Enable CUDA training (recommended if possible).')
 parser.add_argument('--seed', type=int, default=0, help='Random seed for numpy, torch, random.')
-parser.add_argument('--logdir', type=str, default='experiments/build_bed/log/oc', help='Directory for logging statistics')
+parser.add_argument('--logdir', type=str, default='experiments/log_oc', help='Directory for logging statistics')
 parser.add_argument('--exp', type=str, default=None, help='optional experiment name')
 parser.add_argument('--switch-goal', type=bool, default=False, help='switch goal after 2k eps')
 
