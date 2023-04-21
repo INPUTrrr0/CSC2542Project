@@ -11,6 +11,9 @@
 ## Test wrapped environment with HRL baselines
 `python main_HRL.py`
 
+## Check results
+`tensorboard --logdir=./ --port=1402`
+
 ## Tasks
 Specify task configurations in `main_xxx.py`, first line of `configure()`
 

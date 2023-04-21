@@ -57,9 +57,9 @@ class CraftEnv(gym.Env):
         truncated = True if self.n_step >= self.n_truncate else False
         info = {'truncated': truncated}
         sat = state.satisfies(self.goal, self.cookbook.index[self.goal])
-        # reward = 1
-        reward = 1 if sat else -0.8 / self.n_truncate
-        # reward = 1 + 4 * (self.n_truncate - self.n_step) / self.n_truncate
+        # reward += 1
+        reward += 1 if sat else -0.8 / self.n_truncate
+        # reward += 1 + 4 * (self.n_truncate - self.n_step) / self.n_truncate
         done = sat or truncated
         self.state_before = state
 
