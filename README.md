@@ -26,7 +26,7 @@ The levels listed here are "clean" environments without the "variants" shown bel
 
 Noted that, "option" here means how many human instructions given (ideally it may learn those options). Of course, human can also regard all "get" as an option.
 
-- Variants: larger/smaller map size, more/less resource (default: 4 for each essential resources), distraction workshops/items (no use for achieving the goal), OOD (initial world scenario changes on each reset()), stochasticity
+- Variants: larger/smaller map size, more/less resource (default: 4 for each essential resources), distraction workshops/items (no use for achieving the goal), destructive actions (if you do that, you may never get to the goal), OOD (initial world scenario changes on each reset()), stochasticity
 
 - Different rewarding scheme: `./environment/env_wrapper.py`
 
@@ -41,7 +41,7 @@ Craft your own task:
 
 ## Reference
 Environment:
-[psketch](https://github.com/jacobandreas/psketch)([paper](https://arxiv.org/pdf/1611.01796.pdf))
+[psketch](https://github.com/jacobandreas/psketch) ([paper](https://arxiv.org/pdf/1611.01796.pdf))
 
 [Program synthesis guided RL](https://github.com/yycdavid/program-synthesis-guided-RL)
 

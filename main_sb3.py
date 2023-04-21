@@ -8,25 +8,58 @@ import traceback
 import yaml
 from torch.utils.tensorboard import SummaryWriter
 from stable_baselines3 import DQN, PPO, A2C
+from stable_baselines3.common.callbacks import StopTrainingOnMaxEpisodes
 
 from utils.util import Struct
 import environment
 
 
+TOTAL_EPS = 1e6
+EVAL_FREQ = 1e2
+EVAL_EPS = 30
+
+
 def main():
-    config = configure()
+    config = configure("experiments/config_build_plank_ood.yaml")
     env = environment.CraftEnv(config)
+    eval_env = environment.CraftEnv(config, random_seed=1017, eval=True)  # must use different rnd seed!
     
-    # trainer = DQN("MlpPolicy", env, verbose=3)
-    trainer = PPO("MlpPolicy", env, verbose=3)
-    # trainer = A2C("MlpPolicy", env, verbose=3)
+    # trainer = DQN("MlpPolicy", env, verbose=0)
+    trainer = PPO("MlpPolicy", env, verbose=0)
+    # trainer = A2C("MlpPolicy", env, verbose=0)
     # print(trainer.policy)
     env.set_alg_name(trainer.__class__.__name__)
-    trainer.learn(total_timesteps=10000000, log_interval=100000)
 
-def configure():
+    n_eps = 0
+    while n_eps < TOTAL_EPS:
+        # eval
+        eval_steps = np.zeros(EVAL_EPS)
+        for i in range(EVAL_EPS):
+            obs = eval_env.reset()
+            done = False
+            while not done:
+                action, _ = trainer.predict(obs, deterministic=False)
+                # deterministic=True will stuck at some state
+                action = action.item()
+                obs, reward, done, _ = eval_env.step(action)
+            eval_steps[i] = eval_env.n_step
+
+        mean_steps = np.mean(eval_steps)
+        std_steps = np.std(eval_steps)
+        if env.writer is not None:
+            env.writer.add_scalar('Avg Eval (timesteps)', mean_steps, n_eps/EVAL_FREQ)
+            env.writer.add_scalar('Std Eval (timesteps)', std_steps, n_eps/EVAL_FREQ)
+        print(f'Eval stage {int(n_eps/EVAL_FREQ)}, Avg Eval (timesteps): {mean_steps}, Std Eval (timesteps): {std_steps}')
+        print('-------------------------------')
+
+        n_eps += EVAL_FREQ
+        callback_max_episodes = StopTrainingOnMaxEpisodes(max_episodes=EVAL_FREQ, verbose=0)  # refresh it, eval every EVAL_FREQ eps
+        trainer.learn(total_timesteps=int(1e10), log_interval=1000, callback=callback_max_episodes)
+
+
+def configure(file_name):
     # load config
-    with open("experiments/config_build_plank_ood.yaml") as config_f:
+    with open(file_name) as config_f:
         config = Struct(**yaml.load(config_f, Loader=yaml.SafeLoader))
 
     # set up experiment

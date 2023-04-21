@@ -62,7 +62,7 @@ class CraftWorld(object):
     """
     Information of the world
     """
-    def __init__(self, config):
+    def __init__(self, config, ramdom_seed=2):
         self.cookbook = Cookbook(config.recipes)
         self.switch_init_pos = config.world.switch_init_pos
         self.width = config.world.width
@@ -87,7 +87,7 @@ class CraftWorld(object):
         self.water_index = self.cookbook.index["water"]
         self.stone_index = self.cookbook.index["stone"]
 
-        self.random = np.random.RandomState(2)
+        self.random = np.random.RandomState(ramdom_seed)
 
     def sample_scenario_with_goal(self, goal):
         """

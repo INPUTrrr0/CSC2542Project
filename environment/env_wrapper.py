@@ -12,13 +12,14 @@ isDebug = True if gettrace() else False
 
 
 class CraftEnv(gym.Env):
-    def __init__(self, config):
+    def __init__(self, config, random_seed=2, eval=False):
         super(CraftEnv, self).__init__()
         self.alg_name = None
-        self.n_truncate = 500000
+        self.eval = eval
+        self.n_truncate = 1e5
         self.config = config
         self.cookbook = Cookbook(config.recipes)
-        self.world = CraftWorld(config)
+        self.world = CraftWorld(config, random_seed)
         self.writer = None
 
         self.n_action = self.world.n_actions
@@ -35,11 +36,12 @@ class CraftEnv(gym.Env):
         self.n_step = 0
         self.n_episode = 0
 
-        print(f'Indices: {self.cookbook.index.contents}')
-        print(f'Grabbable indices: {self.world.grabbable_indices},\
-                workshop indices: {self.world.workshop_indices}')
-        print(f'Goal: {self.goal}')
-        print('----------------- Start -----------------')
+        if not self.eval:
+            print(f'Indices: {self.cookbook.index.contents}')
+            print(f'Grabbable indices: {self.world.grabbable_indices},\
+                    workshop indices: {self.world.workshop_indices}')
+            print(f'Goal: {self.goal}')
+            print('----------------- Start -----------------')
 
     def set_episode(self, episode):
         self.n_episode = episode
@@ -64,7 +66,7 @@ class CraftEnv(gym.Env):
         state_feats = state.features()
         if isDebug:
             print(f'step: {self.n_step}, action: {dir_to_str(action)}, reward: {reward},\nstate:{state}')
-        if done:
+        if done and not self.eval:
             if truncated:
                 print(f'Ep {self.n_episode}: Timeout ({self.n_step} steps)!')
             else:
