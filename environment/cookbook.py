@@ -1,8 +1,8 @@
-from utils.util import Struct, Index
-
-import copy
 import numpy as np
 import yaml
+
+from utils.util import Index
+
 
 class Cookbook(object):
     def __init__(self, recipes_path):

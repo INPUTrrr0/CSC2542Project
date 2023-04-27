@@ -8,6 +8,7 @@ import traceback
 import yaml
 from torch.utils.tensorboard import SummaryWriter
 from trainers.option_critic import main
+from trainers.skill_chaining import SkillChainingAgentClass
 
 from utils.util import Struct
 import environment
@@ -24,19 +25,29 @@ class OptionCritic:
         main.run(self.args, self.env)
 
 
+class DSC:
+    def __init__(self, env) -> None:
+        self.args = SkillChainingAgentClass.parser.parse_args()
+        self.env = env
+    
+    def learn(self):
+        SkillChainingAgentClass.skill(self.args, self.env)
+
+
 def run_HRL():
     config = configure()
-    env = environment.CraftEnv(config)
+    env = environment.CraftEnv(config, random_seed=1017)
     
     # TODO: add more HRL entries
-    trainer = OptionCritic(env)
+    # trainer = OptionCritic(env)
+    trainer = DSC(env)
     env.set_alg_name(trainer.__class__.__name__)
     trainer.learn()
 
 
 def configure():
     # load config
-    with open("experiments/config_build_plank_ood.yaml") as config_f:
+    with open("experiments/config_build_plank.yaml") as config_f:
         config = Struct(**yaml.load(config_f, Loader=yaml.SafeLoader))
 
     # set up experiment

@@ -35,6 +35,7 @@ class CraftEnv(gym.Env):
         self.state_before = None
         self.n_step = 0
         self.n_episode = 0
+        self.done_ = False
 
         if not self.eval:
             print(f'Indices: {self.cookbook.index.contents}')
@@ -64,11 +65,12 @@ class CraftEnv(gym.Env):
 
         state_feats = state.features()
         if isDebug:
-            print(f'step: {self.n_step}, action: {dir_to_str(action)}, reward: {reward},\nstate:{state}')
+            print(f'Ep {self.n_episode}, step: {self.n_step}, action: {dir_to_str(action)}, reward: {reward},\nstate:{state}')
         if done and not self.eval:
             if truncated:
                 print(f'Ep {self.n_episode}: Timeout ({self.n_step} steps)!')
             else:
+                self.done_ = True
                 print(f'Ep {self.n_episode}: Goal Reached within {self.n_step} steps!')
             if not isDebug:
                 if self.writer is not None:
@@ -81,6 +83,7 @@ class CraftEnv(gym.Env):
     def reset(self):
         self.n_step = 0
         self.n_episode += 1
+        self.done_ = False
 
         if self.config.world.procgen_ood:
             self.sample_another_scenario()  # sample again
