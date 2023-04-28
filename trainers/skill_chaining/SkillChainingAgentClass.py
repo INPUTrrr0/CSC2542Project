@@ -68,7 +68,7 @@ parser.add_argument("--max_num_options", type=int,
 parser.add_argument("--num_subgoal_hits", type=int,
                     help="Number of subgoal hits to learn an option", default=5)
 parser.add_argument("--buffer_len", type=int,
-                    help="buffer size used by option to create init sets", default=50)
+                    help="buffer size used by option to create init sets", default=20)
 parser.add_argument("--classifier_type", type=str,
                     help="ocsvm/elliptic for option initiation clf", default="ocsvm")
 parser.add_argument("--init_q", type=str, help="compute/zero", default="zero")
@@ -340,13 +340,13 @@ class SkillChaining(object):
 
         # Debug logging
         episode_option_executions[selected_option.name] += 1
-        self.option_rewards[selected_option.name].append(discounted_reward)
+        # self.option_rewards[selected_option.name].append(discounted_reward)
 
-        sampled_q_value = self.sample_qvalue(selected_option)
-        self.option_qvalues[selected_option.name].append(sampled_q_value)
-        if self.writer is not None:
-            self.writer.add_scalar("{}_q_value".format(selected_option.name),
-                                   sampled_q_value, selected_option.num_executions)
+        # sampled_q_value = self.sample_qvalue(selected_option)
+        # self.option_qvalues[selected_option.name].append(sampled_q_value)
+        # if self.writer is not None:
+        #     self.writer.add_scalar("{}_q_value".format(selected_option.name),
+        #                            sampled_q_value, selected_option.num_executions)
 
         return option_transitions, option_reward, next_state, len(option_transitions)
 
@@ -359,8 +359,8 @@ class SkillChaining(object):
             sample_qvalues = option.solver.get_qvalues(
                 sample_states, sample_actions)
             if isDebug:
-                print(sample_qvalues.mean().item())
-                # print(sample_qvalues)
+                print('Mean Q value: ', sample_qvalues.mean().item())
+                # print('Q values: ', sample_qvalues)
             return sample_qvalues.mean().item()
         return 0.0
 
