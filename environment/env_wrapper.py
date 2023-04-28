@@ -16,7 +16,7 @@ class CraftEnv(gym.Env):
         super(CraftEnv, self).__init__()
         self.alg_name = None
         self.eval = eval
-        self.n_truncate = 1e5
+        self.n_truncate = int(1e5)
         self.config = config
         self.cookbook = Cookbook(config.recipes)
         self.world = CraftWorld(config, random_seed)
@@ -35,6 +35,7 @@ class CraftEnv(gym.Env):
         self.state_before = None
         self.n_step = 0
         self.n_episode = 0
+        self.n_total_step = 0
         self.done_ = False
 
         if not self.eval:
@@ -58,7 +59,9 @@ class CraftEnv(gym.Env):
         truncated = True if self.n_step >= self.n_truncate else False
         info = {'truncated': truncated}
         sat = state.satisfies(self.goal, self.cookbook.index[self.goal])
-        # reward += 1
+
+        # reward = 1 if sat else 0
+        # reward += 1 if sat else -0.8 / self.n_truncate
         reward += 3 if sat else -2.4 / self.n_truncate
         done = sat or truncated
         self.state_before = state
@@ -67,11 +70,12 @@ class CraftEnv(gym.Env):
         if isDebug:
             print(f'Ep {self.n_episode}, step: {self.n_step}, action: {dir_to_str(action)}, reward: {reward},\nstate:{state}')
         if done and not self.eval:
+            self.n_total_step += self.n_step
             if truncated:
-                print(f'Ep {self.n_episode}: Timeout ({self.n_step} steps)!')
+                print(f'Ep {self.n_episode}: Timeout ({self.n_step} steps)!\t\tTotal steps: {self.n_total_step}.')
             else:
                 self.done_ = True
-                print(f'Ep {self.n_episode}: Goal Reached within {self.n_step} steps!')
+                print(f'Ep {self.n_episode}: Goal Reached within {self.n_step} steps!\t\tTotal steps: {self.n_total_step}.')
             if not isDebug:
                 if self.writer is not None:
                     self.writer.add_scalar('Time steps', self.n_step, self.n_episode)
