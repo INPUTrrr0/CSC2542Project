@@ -80,7 +80,7 @@ class Option(object):
 
         state_size = overall_mdp.env.observation_space.shape[0]
         action_size = overall_mdp.env.action_space.n
-        #print(state_size,action_size)
+        # print(state_size,action_size)
 
         solver_name = "{}_ddpg_agent".format(self.name)
         self.global_solver = DQNAgents(solver_name,state_size, action_size, dqn_type='DQN', replay_memory_size=1e5, batch_size=self.batchsize, gamma=0.99,

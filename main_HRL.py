@@ -35,19 +35,19 @@ class DSC:
 
 
 def run_HRL():
-    config = configure()
+    config = configure("experiments/config_build_bed_ood.yaml")
     env = environment.CraftEnv(config, random_seed=1017)
     
     # TODO: add more HRL entries
-    # trainer = OptionCritic(env)
-    trainer = DSC(env)
+    trainer = OptionCritic(env)
+    # trainer = DSC(env)
     env.set_alg_name(trainer.__class__.__name__)
     trainer.learn()
 
 
-def configure():
+def configure(file_name):
     # load config
-    with open("experiments/config_build_plank.yaml") as config_f:
+    with open(file_name) as config_f:
         config = Struct(**yaml.load(config_f, Loader=yaml.SafeLoader))
 
     # set up experiment

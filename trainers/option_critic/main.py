@@ -8,7 +8,7 @@ from .option_critic import critic_loss as critic_loss_fn
 from .option_critic import actor_loss as actor_loss_fn
 
 from .experience_replay import ReplayBuffer
-from .utils import make_env, to_tensor
+from .utils import to_tensor
 from .logger import Logger
 
 import time
@@ -19,19 +19,19 @@ parser.add_argument('--optimal-eps', type=float, default=0.05, help='Epsilon whe
 parser.add_argument('--frame-skip', default=4, type=int, help='Every how many frames to process')
 parser.add_argument('--learning-rate',type=float, default=.0001, help='Learning rate')
 parser.add_argument('--gamma', type=float, default=.99, help='Discount rate')
-parser.add_argument('--epsilon-start',  type=float, default=1.0, help=('Starting value for epsilon.'))
+parser.add_argument('--epsilon-start',  type=float, default=0.2, help=('Starting value for epsilon.'))
 parser.add_argument('--epsilon-min', type=float, default=.05, help='Minimum epsilon.')
-parser.add_argument('--epsilon-decay', type=float, default=100000, help=('Number of steps to minimum epsilon.'))
+parser.add_argument('--epsilon-decay', type=float, default=500000, help=('Number of steps to minimum epsilon.'))
 parser.add_argument('--max-history', type=int, default=100000, help=('Maximum number of steps stored in replay'))
 parser.add_argument('--batch-size', type=int, default=32, help='Batch size.')
 parser.add_argument('--freeze-interval', type=int, default=200, help=('Interval between target freezes.'))
 parser.add_argument('--update-frequency', type=int, default=4, help=('Number of actions before each SGD update.'))
 parser.add_argument('--termination-reg', type=float, default=0.01, help=('Regularization to decrease termination prob.'))
 parser.add_argument('--entropy-reg', type=float, default=0.01, help=('Regularization to increase policy entropy.'))
-parser.add_argument('--num-options', type=int, default=2, help=('Number of options to create.'))
+parser.add_argument('--num-options', type=int, default=3, help=('Number of options to create.'))
 parser.add_argument('--temp', type=float, default=1, help='Action distribution softmax tempurature param.')
 
-parser.add_argument('--max_steps_ep', type=int, default=500000, help='number of maximum steps per episode.')
+parser.add_argument('--max_steps_ep', type=int, default=int(1e5), help='number of maximum steps per episode.')
 parser.add_argument('--max_steps_total', type=int, default=int(1e7), help='number of maximum steps to take.')
 parser.add_argument('--cuda', type=bool, default=True, help='Enable CUDA training (recommended if possible).')
 parser.add_argument('--seed', type=int, default=0, help='Random seed for numpy, torch, random.')
@@ -69,7 +69,7 @@ def run(args, env):
     logger = Logger(logdir=args.logdir, run_name=f"{OptionCriticFeatures.__name__}-{args.env}-{args.exp}-{time.ctime()}")
 
     steps = 0
-    if args.switch_goal: print(f"Current goal {env.goal}")
+    # if args.switch_goal: print(f"Current goal {env.goal}")
     while steps < args.max_steps_total:
 
         rewards = 0 ; option_lengths = {opt:[] for opt in range(args.num_options)}
@@ -82,18 +82,18 @@ def run(args, env):
         # Goal switching experiment: run for 1k episodes in fourrooms, switch goals and run for another
         # 2k episodes. In option-critic, if the options have some meaning, only the policy-over-options
         # should be finedtuned (this is what we would hope).
-        if args.switch_goal and logger.n_eps == 1000:
-            torch.save({'model_params': option_critic.state_dict(),
-                        'goal_state': env.goal},
-                        f'models/option_critic_seed={args.seed}_1k')
-            env.switch_goal()
-            print(f"New goal {env.goal}")
+        # if args.switch_goal and logger.n_eps == 1000:
+        #     torch.save({'model_params': option_critic.state_dict(),
+        #                 'goal_state': env.goal},
+        #                 f'models/option_critic_seed={args.seed}_1k')
+        #     env.switch_goal()
+        #     print(f"New goal {env.goal}")
 
-        if args.switch_goal and logger.n_eps > 2000:
-            torch.save({'model_params': option_critic.state_dict(),
-                        'goal_state': env.goal},
-                        f'models/option_critic_seed={args.seed}_2k')
-            break
+        # if args.switch_goal and logger.n_eps > 2000:
+        #     torch.save({'model_params': option_critic.state_dict(),
+        #                 'goal_state': env.goal},
+        #                 f'models/option_critic_seed={args.seed}_2k')
+        #     break
 
         done = False ; ep_steps = 0 ; option_termination = True ; curr_op_len = 0
         while not done and ep_steps < args.max_steps_ep:
