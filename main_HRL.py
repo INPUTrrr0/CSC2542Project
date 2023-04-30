@@ -26,6 +26,7 @@ class OptionCritic:
         args = copy.deepcopy(self.args)
         args.env = self.env.config.name
         args.exp = self.env.alg_name
+        args.num_options = 2
         run_oc.run(args, self.env, self.eval_env)
     
     def eval(self, oc, eval_episodes=30):
@@ -55,7 +56,7 @@ class FuN:
 
 
 def run_HRL():
-    config = configure("experiments/config_build_bridge.yaml")
+    config = configure("experiments/config_get_gold.yaml")
     env = environment.CraftEnv(config, random_seed=101)
     eval_env = environment.CraftEnv(config, random_seed=1017, eval=True, scenario=env.scenario)  # must use different rnd seed!
     
