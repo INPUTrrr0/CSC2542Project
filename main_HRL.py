@@ -57,7 +57,7 @@ class FuN:
 def run_HRL():
     config = configure("experiments/config_build_bridge.yaml")
     env = environment.CraftEnv(config, random_seed=101)
-    eval_env = environment.CraftEnv(config, random_seed=1017, eval=True)  # must use different rnd seed!
+    eval_env = environment.CraftEnv(config, random_seed=1017, eval=True, scenario=env.scenario)  # must use different rnd seed!
     
     # TODO: add more HRL entries
     trainer = OptionCritic(env, eval_env)

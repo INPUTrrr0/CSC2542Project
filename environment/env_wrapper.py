@@ -12,7 +12,7 @@ isDebug = True if gettrace() else False
 
 
 class CraftEnv(gym.Env):
-    def __init__(self, config, random_seed=2, eval=False):
+    def __init__(self, config, random_seed=2, eval=False, scenario=None):
         super(CraftEnv, self).__init__()
         self.alg_name = None
         self.eval = eval
@@ -31,7 +31,10 @@ class CraftEnv(gym.Env):
         # self.spec = gym.envs.registration.EnvSpec('CraftEnv-v0')
 
         self.goal = self.config.world.goal
-        self.scenario = self.world.sample_scenario_with_goal(self.cookbook.index[self.goal])  # goal
+        if scenario is None:
+            self.scenario = self.world.sample_scenario_with_goal(self.cookbook.index[self.goal])  # goal
+        else:
+            self.scenario = scenario
         self.state_before = None
         self.n_step = 0
         self.n_episode = 0
