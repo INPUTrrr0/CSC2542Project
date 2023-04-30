@@ -14,8 +14,8 @@ from utils.util import Struct
 import environment
 
 
-TOTAL_EPS = 1e6
-EVAL_FREQ = 1e2
+TOTAL_EPS = int(1e4)+10
+EVAL_FREQ = int(1e2)
 EVAL_EPS = 30
 
 
