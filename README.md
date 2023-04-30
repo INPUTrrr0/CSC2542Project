@@ -46,7 +46,7 @@ Craft your own task:
 
 
 ## Results
-# Baseline (Random agent's average steps after 10000 episodes, random seed = 101)
+### Baseline (Random agent's average steps after 10000 episodes, random seed = 101)
 - Get wood: 103.53 (with OOD: 80.77)
 
 - Build plank: 478.09 (with OOD: 438.70)
