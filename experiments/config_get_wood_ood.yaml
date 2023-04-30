@@ -1,0 +1,14 @@
+name: get_wood_ood
+recipes: resources/get_wood/recipes.yaml
+world:
+  name: GetWoodOOD
+  goal: wood
+  switch_init_pos: true
+  procgen_ood: true
+  height: 10
+  width: 10
+  win_height: 5
+  win_width: 5
+  n_workshops: 0
+tensorboard_dir: experiments/
+savepoint: experiments/get_wood_ood/model.pk

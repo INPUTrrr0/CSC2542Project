@@ -7,7 +7,8 @@ import sys
 import traceback
 import yaml
 from torch.utils.tensorboard import SummaryWriter
-from trainers.option_critic import main
+from trainers.option_critic import run_oc
+from trainers.feudalnets_MLP import run_fun
 from trainers.skill_chaining import SkillChainingAgentClass
 
 from utils.util import Struct
@@ -16,13 +17,13 @@ import environment
 
 class OptionCritic:
     def __init__(self, env) -> None:
-        self.args = main.parser.parse_args()
+        self.args = run_oc.parser.parse_args()
         self.env = env
     
     def learn(self):
         self.args.env = self.env.config.name
         self.args.exp = self.env.alg_name
-        main.run(self.args, self.env)
+        run_oc.run(self.args, self.env)
 
 
 class DSC:
@@ -34,6 +35,15 @@ class DSC:
         SkillChainingAgentClass.skill(self.args, self.env)
 
 
+class FuN:
+    def __init__(self, env) -> None:
+        self.args = run_fun.parser.parse_args()
+        self.env = env
+    
+    def learn(self):
+        run_fun.main(self.args, self.env)
+
+
 def run_HRL():
     config = configure("experiments/config_build_bed_ood.yaml")
     env = environment.CraftEnv(config, random_seed=1017)
@@ -41,6 +51,7 @@ def run_HRL():
     # TODO: add more HRL entries
     trainer = OptionCritic(env)
     # trainer = DSC(env)
+    # trainer = FuN(env)
     env.set_alg_name(trainer.__class__.__name__)
     trainer.learn()
 

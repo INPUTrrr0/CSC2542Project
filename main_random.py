@@ -20,11 +20,12 @@ EVAL_EPS = 0
 
 
 def main():
-    config = configure("experiments/config_build_bridge.yaml")
+    config = configure("experiments/config_get_gold_ood.yaml")
     env = environment.CraftEnv(config, random_seed=101)
     # env.set_alg_name('Random')
 
     n_eps = 0
+    avg_steps = 0
     while n_eps < TOTAL_EPS:
         obs = env.reset()
         done = False
@@ -33,6 +34,8 @@ def main():
             obs, reward, done, _ = env.step(action)
 
         n_eps += 1
+        avg_steps += (env.n_step - avg_steps) / n_eps
+        print(f'Average steps: {avg_steps}')
 
 
 def configure(file_name):

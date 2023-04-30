@@ -11,6 +11,9 @@
 ## Test wrapped environment with HRL baselines
 `python main_HRL.py`
 
+## Baseline (random agent, to see if the agent learns anything)
+`python main_random.py`
+
 ## Check results
 `tensorboard --logdir=./ --port=1402`
 
@@ -19,17 +22,16 @@ Specify task configurations in `main_xxx.py`, first line of `configure()`
 
 The levels listed here are "clean" environments without the "variants" shown below.
 
-- Level 1 - Get wood (1 option): randomly generate few woods in the environment, just need to get one of them;
+- Level 1 - Get wood (1 subgoal): randomly generate few woods in the environment, just need to get one of them;
 
-- Level 2 - Build plank (2 options): get a wood, and use the wood in the workbench to get the plank; Build bridge (3 options): get a wood and a iron, and use the workbench; 
+- Level 2 - Build plank (2 subgoals): get a wood, and use the wood in the workbench to get the plank; Build bridge (3 subgoals): get a wood and a iron, and use the workbench; 
 
-- Level 3 - Build bed (4 options): get a wood and a grass, use workbench_0 to convert the wood into a plank, then use workbench_1 to convert the plank and grass into a bed; 
+- Level 3 - Build bed (4 subgoals): get a wood and a grass, use workbench_0 to convert the wood into a plank, then use workbench_1 to convert the plank and grass into a bed; 
 
-- Level 4 - Get gem (6 options): get wood, iron, use workbench_0 to convert the wood into a stick, then use workbench_1 to convert the stick and iron into a axe, use axe to break stone, and get gem; Get gold (5 options): get wood, iron, use workbench to build bridge, use the bridge in a right place (if not, the agent need to rebuild) , and get gold;
+- Level 4 - Get gem (6 subgoals): get wood, iron, use workbench_0 to convert the wood into a stick, then use workbench_1 to convert the stick and iron into a axe, use axe to break stone, and get gem; Get gold (5 subgoals): get wood, iron, use workbench to build bridge, use the bridge in a right place (if not, the agent need to rebuild) , and get gold;
 
-Noted that, "option" here means how many human instructions given (ideally it may learn those options). Of course, human can also regard all "get" as an option.
 
-- Variants: larger/smaller map size, more/less resource (default: 4 for each essential resources), distraction workshops/items (no use for achieving the goal), destructive actions (if you do that, you may never get to the goal), OOD (initial world scenario changes on each reset()), stochasticity
+- Variants: larger/smaller map size, more/less resource (*default: 4 for each essential resources*), distraction workshops/items (no use for achieving the goal), destructive actions (if you do that, you may never get to the goal), OOD (initial world scenario changes on each reset()), stochasticity
 
 - Different rewarding scheme: `./environment/env_wrapper.py`
 
@@ -41,6 +43,22 @@ Craft your own task:
 - add an recipe in `./resources/` (refer to `recipes_all.yaml`)
 
 - Specify task configurations in `main_xxx.py`
+
+
+## Results
+# Baseline (Random agent's average steps after 10000 episodes, random seed = 101)
+- Get wood: 103.53 (with OOD: 80.77)
+
+- Build plank: 478.09 (with OOD: 438.70)
+
+- Build Bridge: 465.27 (with OOD: 494.23)
+
+- Build Bed: 835.64 (with OOD: 830.36; only 1 res: 1437.80)
+
+- Get gem: 1686.03 (with OOD: 1721.10)
+
+- Get gold: 1512.32 (with OOD: 1539.17)
+
 
 ## Reference
 Environment:

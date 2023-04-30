@@ -1,0 +1,17 @@
+name: get_gold_ood
+recipes: resources/get_gold/recipes.yaml
+world:
+  name: GetGoldOOD
+  goal: gold
+  switch_init_pos: true
+  procgen_ood: true
+  height: 10
+  width: 10
+  win_height: 5
+  win_width: 5
+  n_workshops: 1
+  num_res:
+    wood: 4
+    iron: 4
+tensorboard_dir: experiments/
+savepoint: experiments/get_gold_ood/model.pk
