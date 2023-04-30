@@ -6,6 +6,7 @@ import os
 import sys
 import traceback
 import yaml
+import copy
 from torch.utils.tensorboard import SummaryWriter
 from trainers.option_critic import run_oc
 from trainers.feudalnets_MLP import run_fun
@@ -16,14 +17,23 @@ import environment
 
 
 class OptionCritic:
-    def __init__(self, env) -> None:
+    def __init__(self, env, eval_env) -> None:
         self.args = run_oc.parser.parse_args()
         self.env = env
+        self.eval_env = eval_env
     
     def learn(self):
-        self.args.env = self.env.config.name
-        self.args.exp = self.env.alg_name
-        run_oc.run(self.args, self.env)
+        args = copy.deepcopy(self.args)
+        args.env = self.env.config.name
+        args.exp = self.env.alg_name
+        run_oc.run(args, self.env, self.eval_env)
+    
+    def eval(self, oc, eval_episodes=30):
+        args = copy.deepcopy(self.args)
+        args.env = self.env.config.name
+        args.exp = self.env.alg_name
+        eval_episode_steps = run_oc.eval(args, self.eval_env, oc, eval_episodes)
+        print(eval_episode_steps)
 
 
 class DSC:
@@ -45,15 +55,17 @@ class FuN:
 
 
 def run_HRL():
-    config = configure("experiments/config_build_bed_ood.yaml")
-    env = environment.CraftEnv(config, random_seed=1017)
+    config = configure("experiments/config_build_bridge.yaml")
+    env = environment.CraftEnv(config, random_seed=101)
+    eval_env = environment.CraftEnv(config, random_seed=1017, eval=True)  # must use different rnd seed!
     
     # TODO: add more HRL entries
-    trainer = OptionCritic(env)
+    trainer = OptionCritic(env, eval_env)
     # trainer = DSC(env)
     # trainer = FuN(env)
     env.set_alg_name(trainer.__class__.__name__)
     trainer.learn()
+    # trainer.eval()
 
 
 def configure(file_name):

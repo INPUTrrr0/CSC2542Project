@@ -15,7 +15,6 @@ import time
 
 parser = argparse.ArgumentParser(description="Option Critic PyTorch")
 parser.add_argument('--env', default='CartPole-v0', help='ROM to run')
-parser.add_argument('--optimal-eps', type=float, default=0.05, help='Epsilon when playing optimally')
 parser.add_argument('--frame-skip', default=4, type=int, help='Every how many frames to process')
 parser.add_argument('--learning-rate',type=float, default=.0001, help='Learning rate')
 parser.add_argument('--gamma', type=float, default=.99, help='Discount rate')
@@ -33,13 +32,17 @@ parser.add_argument('--temp', type=float, default=1, help='Action distribution s
 
 parser.add_argument('--max_steps_ep', type=int, default=int(1e5), help='number of maximum steps per episode.')
 parser.add_argument('--max_steps_total', type=int, default=int(1e7), help='number of maximum steps to take.')
+parser.add_argument('--max_episodes_total', type=int, default=int(1e6), help='number of maximum episodes to take.')
 parser.add_argument('--cuda', type=bool, default=True, help='Enable CUDA training (recommended if possible).')
 parser.add_argument('--seed', type=int, default=0, help='Random seed for numpy, torch, random.')
 parser.add_argument('--logdir', type=str, default='experiments/log_oc', help='Directory for logging statistics')
 parser.add_argument('--exp', type=str, default=None, help='optional experiment name')
 parser.add_argument('--switch-goal', type=bool, default=False, help='switch goal after 2k eps')
 
-def run(args, env):
+parser.add_argument('--optimal-eps', type=float, default=0.05, help='Epsilon when playing optimally')
+
+
+def run(args, env, eval_env):
     # env, is_atari = make_env(args.env)
     is_atari = False
     option_critic = OptionCriticConv if is_atari else OptionCriticFeatures
@@ -69,8 +72,9 @@ def run(args, env):
     logger = Logger(logdir=args.logdir, run_name=f"{OptionCriticFeatures.__name__}-{args.env}-{args.exp}-{time.ctime()}")
 
     steps = 0
+    episodes = 0
     # if args.switch_goal: print(f"Current goal {env.goal}")
-    while steps < args.max_steps_total:
+    while steps < args.max_steps_total and episodes < args.max_episodes_total:
 
         rewards = 0 ; option_lengths = {opt:[] for opt in range(args.num_options)}
 
@@ -96,6 +100,7 @@ def run(args, env):
         #     break
 
         done = False ; ep_steps = 0 ; option_termination = True ; curr_op_len = 0
+        episodes += 1
         while not done and ep_steps < args.max_steps_ep:
             epsilon = option_critic.epsilon
 
@@ -140,6 +145,58 @@ def run(args, env):
             logger.log_data(steps, actor_loss, critic_loss, entropy.item(), epsilon)
 
         logger.log_episode(steps, rewards, option_lengths, ep_steps, epsilon)
+
+        if episodes % 100 == 0:
+            eval_episode_steps = eval(args, eval_env, option_critic, 30)
+            mean_steps = np.mean(eval_episode_steps)
+            std_steps = np.std(eval_episode_steps)
+            print(f'Eval stage {episodes//100}, Avg Eval (timesteps): {mean_steps}, Std Eval (timesteps): {std_steps}')
+            env.writer.add_scalar('Avg Eval (timesteps)', mean_steps, episodes//100)
+            env.writer.add_scalar('Std Eval (timesteps)', std_steps, episodes//100)
+
+
+def eval(args, env, option_critic, eval_episodes):
+    steps = 0
+    episodes = 0
+    eval_episode_steps = []
+    with torch.no_grad():
+        while episodes < eval_episodes:
+
+            rewards = 0 ; option_lengths = {opt:[] for opt in range(args.num_options)}
+
+            obs   = env.reset()
+            state = option_critic.get_state(to_tensor(obs))
+            greedy_option  = option_critic.greedy_option(state)
+            current_option = 0
+
+            done = False ; ep_steps = 0 ; option_termination = True ; curr_op_len = 0
+            episodes += 1
+            while not done and ep_steps < args.max_steps_ep:
+                epsilon = args.epsilon_min
+
+                if option_termination:
+                    option_lengths[current_option].append(curr_op_len)
+                    current_option = np.random.choice(args.num_options) if np.random.rand() < epsilon else greedy_option
+                    curr_op_len = 0
+        
+                action, logp, entropy = option_critic.get_action(state, current_option)
+
+                next_obs, reward, done, _ = env.step(action)
+                rewards += reward
+
+                state = option_critic.get_state(to_tensor(next_obs))
+                option_termination, greedy_option = option_critic.predict_option_termination(state, current_option)
+
+                # update global steps etc
+                steps += 1
+                ep_steps += 1
+                curr_op_len += 1
+                obs = next_obs
+
+                eval_episode_steps.append(env.n_step)
+
+    return eval_episode_steps
+
 
 if __name__=="__main__":
     args = parser.parse_args()
