@@ -56,7 +56,7 @@ class FuN:
 
 
 def run_HRL():
-    config = configure("experiments/config_get_gold.yaml")
+    config = configure("experiments/config_build_plank_ood.yaml")
     env = environment.CraftEnv(config, random_seed=101)
     eval_env = environment.CraftEnv(config, random_seed=1017, eval=True, scenario=env.scenario)  # must use different rnd seed!
     

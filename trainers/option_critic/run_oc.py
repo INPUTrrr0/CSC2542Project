@@ -32,7 +32,7 @@ parser.add_argument('--temp', type=float, default=1, help='Action distribution s
 
 parser.add_argument('--max_steps_ep', type=int, default=int(1e5), help='number of maximum steps per episode.')
 parser.add_argument('--max_steps_total', type=int, default=int(1e7), help='number of maximum steps to take.')
-parser.add_argument('--max_episodes_total', type=int, default=int(1e6), help='number of maximum episodes to take.')
+parser.add_argument('--max_episodes_total', type=int, default=int(1e4)+10, help='number of maximum episodes to take.')
 parser.add_argument('--cuda', type=bool, default=True, help='Enable CUDA training (recommended if possible).')
 parser.add_argument('--seed', type=int, default=0, help='Random seed for numpy, torch, random.')
 parser.add_argument('--logdir', type=str, default='experiments/log_oc', help='Directory for logging statistics')
