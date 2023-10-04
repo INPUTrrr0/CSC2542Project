@@ -151,8 +151,8 @@ def run(args, env, eval_env, writer):
             mean_steps = np.mean(eval_episode_steps)
             std_steps = np.std(eval_episode_steps)
             print(f'Eval stage {episodes//100}, Avg Eval (timesteps): {mean_steps}, Std Eval (timesteps): {std_steps}')
-            env.writer.add_scalar('eval/mean_ep_length', mean_steps, steps)
-            env.writer.add_scalar('eval/std_ep_length', std_steps, steps)
+            writer.add_scalar('eval/mean_ep_length', mean_steps, steps)
+            writer.add_scalar('eval/std_ep_length', std_steps, steps)
 
 
 def eval(args, env, option_critic, eval_episodes):
