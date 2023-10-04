@@ -66,7 +66,7 @@ def run(args, env, eval_env):
 
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
-    env.seed(args.seed)
+    # env.seed(args.seed)
 
     buffer = ReplayBuffer(capacity=args.max_history, seed=args.seed)
     # logger = Logger(logdir=args.logdir, run_name=f"{OptionCriticFeatures.__name__}-{args.env}-{args.exp}-{time.ctime()}")
@@ -147,7 +147,7 @@ def run(args, env, eval_env):
         # logger.log_episode(steps, rewards, option_lengths, ep_steps, epsilon)
 
         if episodes % 100 == 0:
-            eval_episode_steps = eval(args, eval_env, option_critic, 30)
+            eval_episode_steps = eval(args, eval_env, option_critic, 100)
             mean_steps = np.mean(eval_episode_steps)
             std_steps = np.std(eval_episode_steps)
             print(f'Eval stage {episodes//100}, Avg Eval (timesteps): {mean_steps}, Std Eval (timesteps): {std_steps}')
