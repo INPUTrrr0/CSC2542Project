@@ -8,7 +8,7 @@ import traceback
 import yaml
 from torch.utils.tensorboard import SummaryWriter
 from stable_baselines3 import DQN, PPO, A2C
-# from stable_baselines3.common.callbacks import StopTrainingOnMaxEpisodes
+from stable_baselines3.common.callbacks import StopTrainingOnMaxEpisodes
 
 from utils.util import Struct
 from utils.eval_callback import EvalCallbackOnEps
@@ -37,9 +37,10 @@ def main():
     env.set_alg_name(trainer.__class__.__name__)
     eval_callback = EvalCallbackOnEps(env, eval_env,
                                       log_path=None, eval_freq=EVAL_FREQ,
-                                      n_eval_episodes=EVAL_EPS, determinsuoyistic=False,
+                                      n_eval_episodes=EVAL_EPS, deterministic=False,
                                       render=False)
-    trainer.learn(total_timesteps=int(1e7), log_interval=100000, callback=eval_callback)
+    callback_max_episodes = StopTrainingOnMaxEpisodes(max_episodes=10001, verbose=0)
+    trainer.learn(total_timesteps=int(1e7), log_interval=100000, callback=[eval_callback, callback_max_episodes])
 
     # n_eps = 0
     # while n_eps < TOTAL_EPS:
