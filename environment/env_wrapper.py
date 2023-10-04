@@ -53,8 +53,8 @@ class CraftEnv(gym.Env):
     
     def set_alg_name(self, name):
         self.alg_name = name
-        if not isDebug:
-            self.writer = SummaryWriter(self.config.tensorboard_dir.rstrip('/') + f'/{self.config.name}/log/{name}')
+        # if not isDebug:
+        #     self.writer = SummaryWriter(self.config.tensorboard_dir.rstrip('/') + f'/{self.config.name}/log/{name}')
 
     def step(self, action):
         self.n_step += 1
@@ -64,8 +64,8 @@ class CraftEnv(gym.Env):
         sat = state.satisfies(self.goal, self.cookbook.index[self.goal])
 
         # reward = 1 if sat else 0
-        # reward += 1 if sat else -0.8 / self.n_truncate
-        reward += 3 if sat else -2.4 / self.n_truncate
+        reward += 1 if sat else -0.8 / self.n_truncate
+        # reward += 3 if sat else -2.4 / self.n_truncate
         done = sat or truncated
         self.state_before = state
 
@@ -84,7 +84,11 @@ class CraftEnv(gym.Env):
                     self.writer.add_scalar('Time steps', self.n_step, self.n_episode)
             else:
                 print('------------------------------------------')
-                sleep(3)
+                sleep(2)
+        if done and self.eval:
+            self.n_total_step += self.n_step
+            if not truncated:
+                self.done_ = True
         return state_feats, reward, done, info
 
     def reset(self):

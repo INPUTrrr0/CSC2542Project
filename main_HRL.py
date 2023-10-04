@@ -11,6 +11,7 @@ from torch.utils.tensorboard import SummaryWriter
 from trainers.option_critic import run_oc
 from trainers.feudalnets_MLP import run_fun
 from trainers.skill_chaining import SkillChainingAgentClass
+from trainers.option_critic.fourrooms import Fourrooms
 
 from utils.util import Struct
 import environment
@@ -56,7 +57,7 @@ class FuN:
 
 
 def run_HRL():
-    config = configure("experiments/config_build_plank_ood.yaml")
+    config = configure("experiments/config_get_wood.yaml")
     env = environment.CraftEnv(config, random_seed=101)
     eval_env = environment.CraftEnv(config, random_seed=1017, eval=True, scenario=env.scenario)  # must use different rnd seed!
     
@@ -82,16 +83,16 @@ def configure(file_name):
         os.mkdir(config.experiment_dir)
 
     # set up logging
-    log_name = os.path.join(config.experiment_dir, "run.log")
-    logging.basicConfig(filename=log_name, level=logging.DEBUG,
-            format='%(asctime)s %(levelname)-8s %(message)s')
-    def handler(type, value, tb):
-        logging.exception("Uncaught exception: %s", str(value))
-        logging.exception("\n".join(traceback.format_exception(type, value, tb)))
-    sys.excepthook = handler
+    # log_name = os.path.join(config.experiment_dir, "run.log")
+    # logging.basicConfig(filename=log_name, level=logging.DEBUG,
+    #         format='%(asctime)s %(levelname)-8s %(message)s')
+    # def handler(type, value, tb):
+    #     logging.exception("Uncaught exception: %s", str(value))
+    #     logging.exception("\n".join(traceback.format_exception(type, value, tb)))
+    # sys.excepthook = handler
 
-    logging.info("BEGIN")
-    logging.info(str(config))
+    # logging.info("BEGIN")
+    # logging.info(str(config))
 
     return config
 

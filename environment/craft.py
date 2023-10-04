@@ -276,6 +276,7 @@ class CraftState(object):
             self._cached_features = features
 
         return self._cached_features
+    # TODO: add symbolic features
 
     def step(self, action):
         x, y = self.pos
