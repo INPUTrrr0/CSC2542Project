@@ -42,7 +42,7 @@ parser.add_argument('--switch-goal', type=bool, default=False, help='switch goal
 parser.add_argument('--optimal-eps', type=float, default=0.05, help='Epsilon when playing optimally')
 
 
-def run(args, env, eval_env):
+def run(args, env, eval_env, writer):
     # env, is_atari = make_env(args.env)
     is_atari = False
     option_critic = OptionCriticConv if is_atari else OptionCriticFeatures

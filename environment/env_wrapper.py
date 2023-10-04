@@ -80,8 +80,9 @@ class CraftEnv(gym.Env):
                 self.done_ = True
                 print(f'Ep {self.n_episode}: Goal Reached within {self.n_step} steps!\t\tTotal steps: {self.n_total_step}.')
             if not isDebug:
-                if self.writer is not None:
-                    self.writer.add_scalar('Time steps', self.n_step, self.n_episode)
+                pass
+                # if self.writer is not None:
+                #     self.writer.add_scalar('Time steps', self.n_step, self.n_episode)
             else:
                 print('------------------------------------------')
                 sleep(2)

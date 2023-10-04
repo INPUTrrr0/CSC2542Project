@@ -10,11 +10,14 @@ import copy
 from torch.utils.tensorboard import SummaryWriter
 from trainers.option_critic import run_oc
 from trainers.feudalnets_MLP import run_fun
-from trainers.skill_chaining import SkillChainingAgentClass
-from trainers.option_critic.fourrooms import Fourrooms
+# from trainers.skill_chaining import SkillChainingAgentClass
+# from trainers.option_critic.fourrooms import Fourrooms
 
 from utils.util import Struct
 import environment
+
+
+seed = 201
 
 
 class OptionCritic:
@@ -25,10 +28,13 @@ class OptionCritic:
     
     def learn(self):
         args = copy.deepcopy(self.args)
-        args.env = self.env.config.name
+        config = self.env.config
+        args.env = config.name
         args.exp = self.env.alg_name
-        args.num_options = 6
-        run_oc.run(args, self.env, self.eval_env)
+        args.num_options = 4
+        args.seed = seed
+        writer = SummaryWriter(config.tensorboard_dir.rstrip('/') + f'/{config.name}/log/OC_seed{seed}')
+        run_oc.run(args, self.env, self.eval_env, writer)
     
     def eval(self, oc, eval_episodes=100):
         args = copy.deepcopy(self.args)
@@ -38,27 +44,27 @@ class OptionCritic:
         print(eval_episode_steps)
 
 
-class DSC:
-    def __init__(self, env) -> None:
-        self.args = SkillChainingAgentClass.parser.parse_args()
-        self.env = env
+# class DSC:
+#     def __init__(self, env) -> None:
+#         self.args = SkillChainingAgentClass.parser.parse_args()
+#         self.env = env
     
-    def learn(self):
-        SkillChainingAgentClass.skill(self.args, self.env)
+#     def learn(self):
+#         SkillChainingAgentClass.skill(self.args, self.env)
 
 
-class FuN:
-    def __init__(self, env) -> None:
-        self.args = run_fun.parser.parse_args()
-        self.env = env
+# class FuN:
+#     def __init__(self, env) -> None:
+#         self.args = run_fun.parser.parse_args()
+#         self.env = env
     
-    def learn(self):
-        run_fun.main(self.args, self.env)
+#     def learn(self):
+#         run_fun.main(self.args, self.env)
 
 
 def run_HRL():
-    config = configure("experiments/config_get_gem.yaml")
-    env = environment.CraftEnv(config, random_seed=101)
+    config = configure("experiments/config_build_bed.yaml")
+    env = environment.CraftEnv(config, random_seed=seed)
     eval_env = environment.CraftEnv(config, random_seed=1017, eval=True, scenario=env.scenario)  # must use different rnd seed!
     
     # TODO: add more HRL entries
