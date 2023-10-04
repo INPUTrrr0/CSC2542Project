@@ -27,10 +27,10 @@ class OptionCritic:
         args = copy.deepcopy(self.args)
         args.env = self.env.config.name
         args.exp = self.env.alg_name
-        args.num_options = 2
+        args.num_options = 6
         run_oc.run(args, self.env, self.eval_env)
     
-    def eval(self, oc, eval_episodes=30):
+    def eval(self, oc, eval_episodes=100):
         args = copy.deepcopy(self.args)
         args.env = self.env.config.name
         args.exp = self.env.alg_name
@@ -57,7 +57,7 @@ class FuN:
 
 
 def run_HRL():
-    config = configure("experiments/config_get_wood.yaml")
+    config = configure("experiments/config_get_gem.yaml")
     env = environment.CraftEnv(config, random_seed=101)
     eval_env = environment.CraftEnv(config, random_seed=1017, eval=True, scenario=env.scenario)  # must use different rnd seed!
     

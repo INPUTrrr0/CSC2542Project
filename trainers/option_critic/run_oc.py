@@ -9,7 +9,7 @@ from .option_critic import actor_loss as actor_loss_fn
 
 from .experience_replay import ReplayBuffer
 from .utils import to_tensor
-from .logger import Logger
+# from .logger import Logger
 
 import time
 
@@ -69,7 +69,7 @@ def run(args, env, eval_env):
     env.seed(args.seed)
 
     buffer = ReplayBuffer(capacity=args.max_history, seed=args.seed)
-    logger = Logger(logdir=args.logdir, run_name=f"{OptionCriticFeatures.__name__}-{args.env}-{args.exp}-{time.ctime()}")
+    # logger = Logger(logdir=args.logdir, run_name=f"{OptionCriticFeatures.__name__}-{args.env}-{args.exp}-{time.ctime()}")
 
     steps = 0
     episodes = 0
@@ -142,17 +142,17 @@ def run(args, env, eval_env):
             curr_op_len += 1
             obs = next_obs
 
-            logger.log_data(steps, actor_loss, critic_loss, entropy.item(), epsilon)
+            # logger.log_data(steps, actor_loss, critic_loss, entropy.item(), epsilon)
 
-        logger.log_episode(steps, rewards, option_lengths, ep_steps, epsilon)
+        # logger.log_episode(steps, rewards, option_lengths, ep_steps, epsilon)
 
         if episodes % 100 == 0:
             eval_episode_steps = eval(args, eval_env, option_critic, 30)
             mean_steps = np.mean(eval_episode_steps)
             std_steps = np.std(eval_episode_steps)
             print(f'Eval stage {episodes//100}, Avg Eval (timesteps): {mean_steps}, Std Eval (timesteps): {std_steps}')
-            env.writer.add_scalar('Avg Eval (timesteps)', mean_steps, episodes//100)
-            env.writer.add_scalar('Std Eval (timesteps)', std_steps, episodes//100)
+            env.writer.add_scalar('eval/mean_ep_length', mean_steps, steps)
+            env.writer.add_scalar('eval/std_ep_length', std_steps, steps)
 
 
 def eval(args, env, option_critic, eval_episodes):
