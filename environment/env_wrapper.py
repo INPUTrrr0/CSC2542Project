@@ -16,7 +16,7 @@ class CraftEnv(gym.Env):
         super(CraftEnv, self).__init__()
         self.alg_name = None
         self.eval = eval
-        self.n_truncate = int(1e5)
+        self.n_truncate = 20000
         self.config = config
         self.cookbook = Cookbook(config.recipes)
         self.world = CraftWorld(config, random_seed)
