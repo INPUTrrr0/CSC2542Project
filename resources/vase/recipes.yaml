@@ -1,0 +1,14 @@
+environment:
+  - boundary
+
+
+primitives:
+  - exit_door 
+  - vase
+  - key
+  - person 
+
+precaution: True 
+
+recipes:
+

@@ -1,0 +1,92 @@
+#!/usr/bin/env python
+
+import logging
+import numpy as np
+import os
+import sys
+import traceback
+import yaml
+from torch.utils.tensorboard import SummaryWriter
+from stable_baselines3 import DQN, PPO, A2C
+from stable_baselines3.common.callbacks import StopTrainingOnMaxEpisodes
+
+from utils.util import Struct
+from utils.eval_callback import EvalCallbackOnEps
+from stable_baselines3.common.callbacks import EvalCallback
+from stable_baselines3.common.monitor import Monitor
+import environment
+
+
+TOTAL_EPS = int(1e4)+10
+EVAL_FREQ = 100
+# EVAL_FREQ = 10000
+EVAL_EPS = 100
+
+
+def main():
+    config = configure("experiments/vase.yaml")
+    env = environment.CraftEnv(config, random_seed=101)
+    eval_env = environment.CraftEnv(config, random_seed=1017, eval=True, scenario=env.scenario)  # must use different rnd seed!
+    eval_env = Monitor(eval_env)
+
+    #trainer = DQN("MlpPolicy", env, verbose=0, exploration_initial_eps=0.2, exploration_final_eps=0.05, exploration_fraction=5e-2, tensorboard_log='./experiments/dqn')
+    # trainer = DQN("MlpPolicy", env, verbose=0, exploration_initial_eps=0.1, exploration_final_eps=0.1, exploration_fraction=0, tensorboard_log='./experiments/dqn')  # no annealing
+    trainer = PPO("MlpPolicy", env, verbose=0, tensorboard_log='./experiments/ppo')
+    # trainer = A2C("MlpPolicy", env, verbose=0, tensorboard_log='./experiments/a2c')
+    # print(trainer.policy)
+    env.set_alg_name(trainer.__class__.__name__)
+    # eval_callback = EvalCallbackOnEps(env, eval_env,
+    #                                   log_path=None, eval_freq=EVAL_FREQ,
+    #                                   n_eval_episodes=EVAL_EPS, deterministic=False,
+    #                                   render=False)
+    #callback_max_episodes = StopTrainingOnMaxEpisodes(max_episodes=10001, verbose=0)
+    #trainer.learn(total_timesteps=int(1e7), log_interval=100000, callback=[eval_callback, callback_max_episodes])
+
+    #trainer.learn(total_timesteps=int(1e7), log_interval=100000) #better with eval, but also ok without eval 
+
+    # n_eps = 0
+    # while n_eps < TOTAL_EPS:
+    #     # eval
+    #     if EVAL_EPS and n_eps > 0:
+    #         eval_steps = np.zeros(EVAL_EPS)
+    #         for i in range(EVAL_EPS):
+    #             obs = eval_env.reset()
+    #             done = False
+    #             while not done:
+    #                 action, _ = trainer.predict(obs, deterministic=False)
+    #                 # deterministic=True will stuck at some state
+    #                 action = action.item()
+    #                 obs, reward, done, _ = eval_env.step(action)
+    #             eval_steps[i] = eval_env.n_step
+
+    #         mean_steps = np.mean(eval_steps)
+    #         std_steps = np.std(eval_steps)
+    #         if env.writer is not None:
+    #             env.writer.add_scalar('Avg Eval (timesteps)', mean_steps, n_eps/EVAL_FREQ)
+    #             env.writer.add_scalar('Std Eval (timesteps)', std_steps, n_eps/EVAL_FREQ)
+    #         print(f'Eval stage {int(n_eps/EVAL_FREQ)}, Avg Eval (timesteps): {mean_steps}, Std Eval (timesteps): {std_steps}')
+    #         print('-------------------------------')
+    #     n_eps += EVAL_FREQ
+
+    #     callback_max_episodes = StopTrainingOnMaxEpisodes(max_episodes=EVAL_FREQ, verbose=0)  # refresh it, eval every EVAL_FREQ eps
+    #     # env.set_episode(env.n_episode-1)  # offset the one more resetting
+    #     trainer.learn(total_timesteps=int(1e7), log_interval=100000, callback=callback_max_episodes)
+    #     # Not working if using linear annealing of epsilon; epsilon will be back and forth
+
+
+def configure(file_name):
+    # load config
+    with open(file_name) as config_f:
+        config = Struct(**yaml.load(config_f, Loader=yaml.SafeLoader))
+
+    # set up experiment
+    config.experiment_dir = os.path.join("experiments/%s" % config.name)
+    # assert not os.path.exists(config.experiment_dir), \
+    #         "Experiment %s already exists!" % config.experiment_dir
+    if not os.path.exists(config.experiment_dir):
+        os.mkdir(config.experiment_dir)
+
+    return config
+
+if __name__ == "__main__":
+    main()

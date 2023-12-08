@@ -79,6 +79,8 @@ class CraftWorld(object):
             1
         self.n_actions = N_ACTIONS
 
+        self.precaution = self.cookbook.precaution
+
         self.non_grabbable_indices = self.cookbook.environment
         self.grabbable_indices = [i for i in range(self.cookbook.n_kinds)
                                   if i not in self.non_grabbable_indices]
@@ -86,6 +88,7 @@ class CraftWorld(object):
                                  for i in range(self.n_workshops)]
         self.water_index = self.cookbook.index["water"]
         self.stone_index = self.cookbook.index["stone"]
+        self.exit_door_index = self.cookbook.index["exit_door"]
 
         self.random = np.random.RandomState(ramdom_seed)
 
@@ -113,6 +116,7 @@ class CraftWorld(object):
         grid[self.width-1:, :, i_bd] = 1
         grid[:, 0, i_bd] = 1
         grid[:, self.height-1:, i_bd] = 1
+        grid[1,1,self.cookbook.index["exit_door"]]=1
 
         # treasure
         if make_island or make_cave:
@@ -137,11 +141,21 @@ class CraftWorld(object):
                     (x, y) = random_free(grid, self.random, self.width, self.height)
                     grid[x, y, primitive] = 1
         else:  # num of resources defined by config
-            for k, v in self.num_res.items():
-                primitive = self.cookbook.index[k]
-                for i in range(v):
-                    (x, y) = random_free(grid, self.random, self.width, self.height)
-                    grid[x, y, primitive] = 1
+            for item, v in self.num_res.items():
+                if item=="vase":
+                    index=self.cookbook.index[item]
+                    grid[5, 5, index] = 1
+                elif item =="key":
+                    index=self.cookbook.index[item]
+                    grid[4, 4, index] = 1
+                elif item=="person":
+                    grid[2,2,index]= 1
+                else:
+                    primitive_index = self.cookbook.index[item]
+                    for i in range(v):
+                        (x, y) = random_free(grid, self.random, self.width, self.height)
+                        grid[x, y, primitive_index] = 1
+            
 
         # generate crafting stations
         for i_ws in range(self.n_workshops):
@@ -153,6 +167,8 @@ class CraftWorld(object):
 
         # generate init pos
         init_pos = random_free(grid, self.random, self.width, self.height)
+        #TODO: fixed init place, to be changed later!!
+        init_pos = (8,8)
 
         return CraftScenario(grid, init_pos, self)
 
@@ -210,8 +226,10 @@ class CraftScenario(object):
         self.init_pos = init_pos
         self.init_dir = 0
         self.world = world
+        self.door_open=False
 
     def init(self):
+        self.door_open=False
         inventory = np.zeros(self.world.cookbook.n_kinds)
         if self.world.switch_init_pos:
             self.switch_init_pos()
@@ -278,32 +296,130 @@ class CraftState(object):
         return self._cached_features
     # TODO: add symbolic features
 
+#     def lookup(self):
+#         x,y=self.pos
+#         new_y=np.min(self.world.height)
+#         (self.pos, self.world.width, self.world.height, self.dir):
+#             x, y = pos
+#     neighbors = []
+#     if x > 0 and (dir is None or dir == LEFT):
+#         neighbors.append((x-1, y))
+#     if y > 0 and (dir is None or dir == DOWN):
+#         neighbors.append((x, y-1))
+#     if x < width - 1 and (dir is None or dir == RIGHT):
+#         neighbors.append((x+1, y))
+#     if y < height - 1 and (dir is None or dir == UP):
+#         neighbors.append((x, y+1))
+#     return neighbors
+# here = self.grid[nx, ny, :]
+#                     if not self.grid[nx, ny, :].any():  # is empty
+#                         continue
+#                     if here[cookbook.index["vase"]] == 1:
+#                         continue
+    
+    def lookup(self): 
+        x, y = self.pos
+        if y ==1:
+            return None 
+        else:
+            ny=y-1
+            here=self.grid[x,ny,:]
+            if here.any():
+                return cookbook.index.get(np.argmax(here))
+            return None
+        
+    def lookdown(self):
+        x, y = self.pos
+        if y ==self.world.height-2:
+            return None 
+        else:
+            ny=y+1
+            here=self.grid[x,ny,:]
+            if here.any():
+                return cookbook.index.get(np.argmax(here))
+            return None
+
+    def lookleft(self):
+        x, y = self.pos
+        if x ==1:
+            return None 
+        else:
+            nx=x-1
+            here=self.grid[nx,y,:]
+            if here.any():
+                return cookbook.index.get(np.argmax(here))
+            return None        
+
+    def lookright(self):
+        x, y = self.pos
+        if x ==self.world.width-2:
+            return None 
+        else:
+            nx=x+1
+            here=self.grid[nx,y,:]
+            if here.any():
+                return cookbook.index.get(np.argmax(here))
+            return None
+
     def step(self, action):
         x, y = self.pos
         n_dir = self.dir
         n_inventory = self.inventory
         n_grid = self.grid
+        cookbook = self.world.cookbook
 
         reward = 0
 
         # move actions
-        if action == DOWN:
-            dx, dy = (0, -1)
-            n_dir = DOWN
-        elif action == UP:
-            dx, dy = (0, 1)
-            n_dir = UP
-        elif action == LEFT:
-            dx, dy = (-1, 0)
-            n_dir = LEFT
-        elif action == RIGHT:
-            dx, dy = (1, 0)
-            n_dir = RIGHT
+        if action!=USE:
+            if self.world.cookbook.precaution:
+                n_inventory = self.inventory.copy()
+                n_grid = self.grid.copy()
+
+                dx, dy = (1, 1) #TODO: check neighbouring cells, do not interfere with actions yet 
+                for nx, ny in neighbors(self.pos, self.world.width, self.world.height, self.dir):
+                    here = self.grid[nx, ny, :]
+                    if not self.grid[nx, ny, :].any():  # is empty
+                        continue
+                    if here[cookbook.index["vase"]] == 1:
+                        continue
+                            #reward=-1.5
+                            
+
+
+            else:
+                n_inventory = self.inventory.copy()
+                n_grid = self.grid.copy()
+                if n_grid[x, y, cookbook.index["vase"]] == 1:
+                        reward=-3
+                        n_inventory[cookbook.index["vase"]] += 1
+                        n_grid[nx, ny, cookbook.index["vase"]] = 0
+                if n_grid[x, y, cookbook.index["key"]] == 1:
+                    n_inventory[cookbook.index["key"]]=1 
+                    n_grid[x, y, cookbook.index["key"]]=0
+                if n_grid[x, y, cookbook.index["exit_door"]] == 1:
+                    if n_inventory[cookbook.index["key"]]>0:
+                        n_inventory[cookbook.index["exit_door"]]=1 
+                        n_grid[x, y, cookbook.index["exit_door"]] =0 
+
+ 
+            if action == DOWN:
+                dx, dy = (0, -1)
+                n_dir = DOWN
+            elif action == UP:
+                dx, dy = (0, 1)
+                n_dir = UP
+            elif action == LEFT:
+                dx, dy = (-1, 0)
+                n_dir = LEFT
+            elif action == RIGHT:
+                dx, dy = (1, 0)
+                n_dir = RIGHT
 
         # use actions
         elif action == USE:
             cookbook = self.world.cookbook
-            dx, dy = (0, 0)
+            dx, dy = (0, 0) #TODO: check neighbouring cells!!!
             success = False
             for nx, ny in neighbors(self.pos, self.world.width, self.world.height, self.dir):
                 here = self.grid[nx, ny, :]
@@ -322,18 +438,32 @@ class CraftState(object):
                 if not(thing in self.world.grabbable_indices or
                         thing in self.world.workshop_indices or
                         thing == self.world.water_index or
-                        thing == self.world.stone_index):
+                        thing == self.world.stone_index or
+                        thing == self.world.exit_door_index):
                     continue
 
                 n_inventory = self.inventory.copy()
                 n_grid = self.grid.copy()
 
-                if thing in self.world.grabbable_indices:
-                    n_inventory[thing] += 1
-                    n_grid[nx, ny, thing] = 0
+                if thing in self.world.grabbable_indices: 
+                    thing_string = cookbook.index.get(thing)
+                    if thing_string == "vase":
+                        reward=-3
+                        n_grid[nx, ny, thing] = 0
+                    if thing_string == "key":
+                        #print("got key!")
+                        n_inventory[cookbook.index["key"]]+=1
+                        reward=1
+                        n_grid[nx, ny, thing] = 0
+                    if thing_string=="exit_door":
+                        if n_inventory[cookbook.index["key"]]>0:
+                            n_inventory[cookbook.index["exit_door"]]=1 
+                            n_grid[nx, ny, thing] = 0
+                    # n_inventory[thing] += 1
+                    # n_grid[nx, ny, thing] = 0
                     success = True
 
-                elif thing in self.world.workshop_indices:
+                elif thing in self.world.workshop_indices: 
                     # TODO not with strings
                     workshop = cookbook.index.get(thing)
                     for output, inputs in cookbook.recipes.items():
@@ -358,6 +488,11 @@ class CraftState(object):
                     if n_inventory[cookbook.index["axe"]] > 0:
                         n_grid[nx, ny, self.world.stone_index] = 0
 
+
+                # elif thing == self.world.exit_door_index:
+                #     if n_inventory[cookbook.index["key"]]>0:
+                #         n_inventory[cookbook.index["exit_door"]]=1 
+
                 break
 
         # other
@@ -366,6 +501,7 @@ class CraftState(object):
 
         n_x = x + dx
         n_y = y + dy
+        #TODO: what's this?
         if self.grid[n_x, n_y, :].any():
             n_x, n_y = x, y
 
@@ -376,6 +512,19 @@ class CraftState(object):
     def next_to(self, i_kind):
         x, y = self.pos
         return self.grid[x-1:x+2, y-1:y+2, i_kind].any()
+
+    def get_ogmap_map_invetory(self):
+        map = np.argmax(self.grid, axis=2)
+        map[self.pos] = -1
+        return self.grid, map.T, self.inventory
+
+    def q_learning_state_encoding(self):
+        dir_features = np.zeros(4)
+        dir_features[self.dir] = 1
+        map = np.argmax(self.grid, axis=2)
+        map[self.pos] = -1
+        map=map.T
+        return np.concatenate((map.flatten(),dir_features,self.inventory))
     
     def __str__(self):
         map = np.argmax(self.grid, axis=2)

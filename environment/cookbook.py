@@ -9,18 +9,20 @@ class Cookbook(object):
         with open(recipes_path) as recipes_f:
             recipes = yaml.load(recipes_f, Loader=yaml.SafeLoader)
         self.index = Index()
+        self.precaution = recipes["precaution"]
         self.environment = set(self.index.index(e) for e in recipes["environment"])
         self.primitives = set(self.index.index(p) for p in recipes["primitives"])
         self.recipes = {}
-        for output, inputs in recipes["recipes"].items():
-            d = {}
-            for inp, count in inputs.items():
-                # special keys
-                if "_" in inp:
-                    d[inp] = count
-                else:
-                    d[self.index.index(inp)] = count
-            self.recipes[self.index.index(output)] = d
+        if recipes["recipes"] is not None:
+            for output, inputs in recipes["recipes"].items():
+                d = {}
+                for inp, count in inputs.items():
+                    # special keys
+                    if "_" in inp:
+                        d[inp] = count
+                    else:
+                        d[self.index.index(inp)] = count
+                self.recipes[self.index.index(output)] = d
         kinds = self.environment | self.primitives | set(self.recipes.keys())
         self.n_kinds = len(self.index)
 
