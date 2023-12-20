@@ -8,7 +8,9 @@ import traceback
 import yaml
 import warnings
 import pandas as pd
+from random import choice
 from collections import deque
+
 # from tensorflow.keras.models import Sequential
 # from tensorflow.keras.layers import Dense
 # from tensorflow.keras.optimizers import Adam
@@ -97,7 +99,7 @@ class Q_learning:
         self.epsilon_decay = epsilon_decay
         self.tensorboard_log =tensorboard_log
         self.w = current_random.uniform(-0.001, 0.001, (self.env.config.world.height*self.env.config.world.width+4+env.cookbook.n_kinds, env.n_action))
-        self.Q_table= np.zeros(((self.env.config.world.height-2)*(self.env.config.world.width-2)*2**2, env.n_action))
+        self.Q_table= np.zeros(((self.env.config.world.height-2)*(self.env.config.world.width-2)*env.cookbook.n_kinds**2, env.n_action))
         self.total_timestep=0 
         self.n_eps = 0
         self.save_eval_dir=save_eval_dir
@@ -120,12 +122,38 @@ class Q_learning:
     def encode_state(self, state):
         NUM_ROWS = 8  # Grid rows
         NUM_COLS = 8  # Grid columns
-        NUM_ITEMS = 2  # Number of items
+        NUM_ITEMS = 3  # Number of items
         NUM_STATES = NUM_ROWS * NUM_COLS * 2**NUM_ITEMS  # 8x8 grid and 4 combinations of items
         x, y = state.pos
         """Encode the state as a single integer."""
-        item_state = state.inventory[self.env.cookbook.index["key"]] * 2 + state.inventory[self.env.cookbook.index["vase"]]  # Convert binary flags to an integer
+        item_state = state.inventory[self.env.cookbook.index["person"]] * 2 + state.inventory[self.env.cookbook.index["key"]] * 2 + state.inventory[self.env.cookbook.index["vase"]]  # Convert binary flags to an integer
         return (x-1) * NUM_COLS * 2**NUM_ITEMS + (y-1) * 2**NUM_ITEMS + int(item_state)
+
+    def act_with_cautious(self, states, epsilon:int, action_to_avoid, with_prob, bellman=False, T=1, normalization=False): #Q_policy 
+            if bellman: #if using bellman probability 
+                e_x = np.exp((states - np.max(states))/T)
+                action_probabilities = e_x / e_x.sum(axis=0)
+                if np.random.rand() < with_prob: #choose a diff action with this prob
+                    action_probabilities+=action_probabilities[action_to_avoid]/(len(action_probabilities)-1)
+                    action_probabilities[action_to_avoid]=0
+                
+                action = np.random.choice(np.arange(len(states)), p=action_probabilities)
+                if np.random.rand() < epsilon:
+                    index=choice([i for i in range(self.env.n_action) if i != action_to_avoid])
+                    return index, states[index]
+                return action, states[action]
+            if normalization:
+                min_val = np.min(states)
+                max_val = np.max(states)
+                normalized = (states - min_val) / (states - states)
+                # Adjust to exclude 0 and 1
+                epsilon = 1e-10  # Small constant
+                normalized = (normalized * (1 - 2 * epsilon)) + epsilon
+                action = np.random.choice(np.arange(len(states)), p=normalized)
+                return action, states[action]
+            else:
+                return states.argmax(), states[states.argmax()]
+
 
     def act(self, states, epsilon:int, bellman=False, T=1, normalization=False): #Q_policy 
         if np.random.rand() < epsilon:
@@ -209,6 +237,40 @@ class Q_learning:
         steps = 0
         while True:
             steps += 1
+            if self.env.world.cookbook.precaution:
+                if state.lookup() is not None:
+                    item=state.lookup()
+                    if item=="vase":
+                        action, action_value=self.act_with_cautious(action_values,self.epsilon,action_to_avoid=1,with_prob=0.5,bellman=True)
+                    elif item=="person":
+                        action, action_value=self.act_with_cautious(action_values,self.epsilon,action_to_avoid=1,with_prob=0.9,bellman=True)
+                    if self.tabular:
+                        self.Q_table[state_encoding, 1]=self.Q_table[state_encoding, 1]*0.99 #basically like adding a little bit of negative reward!
+                if state.lookdown() is not None:
+                    item=state.lookdown()
+                    if item=="vase":
+                        action, action_value=self.act_with_cautious(action_values,self.epsilon,action_to_avoid=0,with_prob=0.5,bellman=True)
+                    elif item=="person":
+                        action, action_value=self.act_with_cautious(action_values,self.epsilon,action_to_avoid=0,with_prob=0.9,bellman=True)
+                    if self.tabular:
+                        self.Q_table[state_encoding, 0]=self.Q_table[state_encoding, 1]*0.99
+                if state.lookleft() is not None:
+                    item=state.lookleft()
+                    if item=="vase":
+                        action, action_value=self.act_with_cautious(action_values,self.epsilon,action_to_avoid=2,with_prob=0.5,bellman=True)
+                    elif item=="person":
+                        action, action_value=self.act_with_cautious(action_values,self.epsilon,action_to_avoid=2,with_prob=0.9,bellman=True)
+                    if self.tabular:
+                        self.Q_table[state_encoding, 2]=self.Q_table[state_encoding, 1]*0.99
+                if state.lookright() is not None:
+                    item=state.lookright()
+                    if item=="vase":
+                        action, action_value=self.act_with_cautious(action_values,self.epsilon,action_to_avoid=3,with_prob=0.5,bellman=True)
+                    elif item=="person":
+                        action, action_value=self.act_with_cautious(action_values,self.epsilon,action_to_avoid=3,with_prob=0.9,bellman=True)
+                    if self.tabular:
+                        self.Q_table[state_encoding, 3]=self.Q_table[state_encoding, 1]*0.99
+                    
             #state_value = Q.apply_weight(state_encoding)
             action, action_value = self.act(action_values, self.epsilon, bellman=True) #pick an action given the values and epsilons
             state, reward, terminated, truncated = self.env.step(action, basic=True) #next state of the chosen action # probability？？
